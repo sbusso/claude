@@ -18,22 +18,24 @@ Follow these steps to create the GitHub issue:
    - Search for current best practices in writing GitHub issues, focusing on clarity, completeness, and actionability.
    - Look for examples of well-written issues in popular open-source projects for inspiration.
 
-3. Deep Feature Analysis:
-   a. Determine if this is a complex feature by checking for:
+3. Feature Analysis:
+
+   a. Assess feature complexity by checking for:
 
    - Cross-system integration requirements
    - New user workflows or paradigms
    - Performance or security implications
    - Multiple stakeholder impacts
-   - Unclear technical feasibility
-     b. If it's a complex feature, use this extended thinking prompt:
-     "Think deeply about this feature request: $ARGUMENTS. Consider the user problem, potential solutions, technical implications, and business value. Think harder about edge cases and integration challenges."
-     c. Extract the following from the feature description and your analysis:
-   - User Story (Who, What, Why)
+
+   b. Extract core information from the feature description:
+
+   - User Story (Who, What, Why) - focus on the user need and benefit
    - Business Value (Problem solved, User impact, Success metrics)
-   - Functional Requirements
-   - Non-Functional Requirements
-     d. Define the scope:
+   - Functional Requirements (what the feature must do)
+   - Non-Functional Requirements (performance, security, usability)
+
+   c. Define clear scope boundaries:
+
    - In Scope: Core functionality, essential user interactions, required integrations
    - Out of Scope: Advanced features for future iterations, edge cases for later consideration, optional enhancements
 
@@ -76,13 +78,6 @@ Follow these steps to create the GitHub issue:
   - [Core capability 2]
   - [Core capability 3]
 
-  ## Non-Functional Requirements
-
-  - **Performance**: [Speed/efficiency expectations]
-  - **Security**: [Security considerations]
-  - **Accessibility**: [Accessibility requirements]
-  - **Scalability**: [Growth considerations]
-
   ## Dependencies
 
   - [ ] [Dependency 1]
@@ -103,40 +98,29 @@ Follow these steps to create the GitHub issue:
   [High-level technical considerations only - implementation details will be planned separately]
   ```
 
-4. Create the GitHub issue:
+5. Create the GitHub issue:
 
-   - Once the plan is approved, draft the GitHub issue content.
-   - Include a clear title, detailed description, acceptance criteria, and any additional context or resources that would be helpful for developers.
-   - Use appropriate formatting (e.g., Markdown) to enhance readability.
-   - Ensure required labels exist: Run `~/.claude/commands/setup-labels.sh` if needed
-   - Create the issue in the backlog using the `gh` command-line tool  
-   - Add the issue to the GitHub Project and set appropriate fields
+   - Draft the GitHub issue using the template structure above
+   - Include clear title, detailed description, and acceptance criteria
+   - Use appropriate formatting (Markdown) for readability
+   - Create the issue: `gh issue create --title "[Feature] [brief description]" --body "[content]"`
+   - Add to GitHub Project and set appropriate fields
 
-5. Issue Validation:
-   a. Review the issue content against this checklist:
+6. Issue validation:
+
+   Review the issue against these criteria:
 
    - Clear user story with who/what/why
-   - Specific acceptance criteria
-   - Measurable success criteria
-   - Clear scope boundaries
-   - Focused on user value, not implementation
-   - Acceptance criteria are testable
+   - Specific and testable acceptance criteria
+   - Measurable success criteria and outcomes
+   - Clear scope boundaries (in/out of scope)
+   - Focused on user value and problem-solving, not implementation details
    - Requirements are specific and clear
-   - Success metrics are measurable
-     b. Determine if human review is required based on these criteria:
-   - Feature affects core user workflows
-   - New user-facing concepts introduced
-   - Business logic complexity is high
-   - Cross-team coordination needed
-   - Significant user behavior changes
 
-6. Best Practices:
-   Ensure the issue adheres to these best practices:
-   - Focus on user value over technical complexity
-   - Provide clear acceptance criteria over implementation details
-   - Include measurable outcomes over feature lists
-   - Emphasize problem-solving over solution-building
-   - Avoid common mistakes like including implementation details or having vague acceptance criteria
-   - Maintain quality standards: testable acceptance criteria, measurable success metrics, clear user story, and achievable scope
+   Consider human review if the feature:
+
+   - Affects core user workflows
+   - Introduces new user-facing concepts
+   - Has high business logic complexity
 
 Your final output should be the completed GitHub issue content, structured according to the template provided in step 2. Do not include any of the explanatory text or steps in your output. Begin your response with the heading "## User Story" and end it with the "## Technical Notes" section. Ensure all sections are filled out based on the feature description provided.
