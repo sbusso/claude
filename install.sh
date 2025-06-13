@@ -9,11 +9,26 @@ if [[ "$1" == "--force" ]]; then
     FORCE_INSTALL=true
 fi
 
-# Auto-detect framework version from git if available, otherwise use hardcoded
+# Auto-detect framework version dynamically
 if command -v git >/dev/null 2>&1 && [ -d ".git" ]; then
-    FRAMEWORK_VERSION=$(git rev-parse --short HEAD 2>/dev/null || echo "unknown")
+    # Check if we're in the claude-workflow repository by looking for install.sh
+    if [ -f "install.sh" ] && [ -f ".claude/templates/CLAUDE.md" ]; then
+        FRAMEWORK_VERSION=$(git rev-parse --short HEAD 2>/dev/null || echo "dev")
+    else
+        # We're in a user's repository, fetch latest version from GitHub
+        if command -v curl >/dev/null 2>&1; then
+            FRAMEWORK_VERSION=$(curl -sSL --connect-timeout 5 "https://api.github.com/repos/sbusso/claude-workflow/commits/main" 2>/dev/null | grep -o '"sha":"[^"]*"' | head -1 | cut -d'"' -f4 | cut -c1-7 2>/dev/null || echo "latest")
+        else
+            FRAMEWORK_VERSION="latest"
+        fi
+    fi
 else
-    FRAMEWORK_VERSION="2478844"  # Fallback commit hash for curl installs
+    # No git, fetch latest version from GitHub
+    if command -v curl >/dev/null 2>&1; then
+        FRAMEWORK_VERSION=$(curl -sSL --connect-timeout 5 "https://api.github.com/repos/sbusso/claude-workflow/commits/main" 2>/dev/null | grep -o '"sha":"[^"]*"' | head -1 | cut -d'"' -f4 | cut -c1-7 2>/dev/null || echo "latest")
+    else
+        FRAMEWORK_VERSION="latest"
+    fi
 fi
 
 VERSION_FILE="$HOME/.claude/.framework_version"
