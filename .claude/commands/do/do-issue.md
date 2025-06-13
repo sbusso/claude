@@ -85,176 +85,57 @@ git worktree add ../$(basename $(pwd))-issue-$ARGUMENTS feature/issue-$ARGUMENTS
 cd ../$(basename $(pwd))-issue-$ARGUMENTS
 ```
 
-## Phase 3: Test-First Development Workflow
+## Phase 3: Smart Test-First Development
 
 ### 3.1 Reference Code Guidelines
 
-Ensure implementation follows project standards:
+Follow project standards:
+- **Python**: `.claude/code-guidelines/python.md` (uv, FastAPI, 300-line limit)
+- **TypeScript**: `.claude/code-guidelines/typescript.md` (bun, TanStack Router, shadcn/ui)
+- **React**: `.claude/code-guidelines/react.md` (React 19, Server Components)
 
-- **Python**: Use `.claude/code-guidelines/python.md` (uv, FastAPI, 300-line limit)
-- **TypeScript**: Use `.claude/code-guidelines/typescript.md` (bun, TanStack Router, shadcn/ui)
-- **React**: Use `.claude/code-guidelines/react.md` (React 19, Server Components, modern patterns)
-- **General**: Maintain file size limits, modular design, proper error handling
+### 3.2 Test What Matters
 
-### 3.2 TDD Workflow: Write Test → Commit → Code → Iterate
+Choose the right tests for what you're building:
 
-#### Step 1: Write Tests First (RED)
-
-**A. Unit Tests**
+**API/Backend Logic**: Write focused tests for core business logic
 ```bash
-# Create test files for core functionality
-# Focus on business logic and API contracts
-
-# Example for backend (Python/FastAPI)
-touch tests/test_user_service.py
-touch tests/test_auth_endpoints.py
-
-# Example for frontend (React/TypeScript)  
-touch src/components/__tests__/LoginForm.test.tsx
-touch src/hooks/__tests__/useAuth.test.tsx
+# Test the important stuff: business rules, data validation, API contracts
+touch tests/test_auth_service.py
 ```
 
-**B. Integration Tests**
+**UI Components**: Test user interactions that matter
+```bash  
+# Use Playwright MCP for critical user flows only
+# "Test the login flow works end-to-end"
+```
+
+**Bug Fixes**: Write a test that reproduces the bug first
 ```bash
-# API integration tests
-touch tests/integration/test_auth_flow.py
-
-# Frontend integration tests
-touch src/__tests__/auth-flow.integration.test.tsx
+# Prove the bug exists, then fix it
 ```
 
-**C. UI Tests with Playwright MCP**
-```bash
-# Create Playwright test files
-mkdir -p tests/e2e
-touch tests/e2e/auth-flow.spec.ts
+### 3.3 Lean TDD Cycle
 
-# Use Playwright MCP for UI validation
-# Tests will be created using natural language with MCP
-```
+1. **Write minimal test** for the core functionality
+2. **Commit failing test**: `git commit -m "test: reproduce issue #$ARGUMENTS"`
+3. **Make it pass** with simplest code
+4. **Commit working code**: `git commit -m "feat: fix issue #$ARGUMENTS"`
+5. **Refactor if needed** (only if messy)
 
-#### Step 2: Commit Tests (Initial Commit)
+### 3.4 Smart Testing Choices
 
-```bash
-# Commit failing tests first
-git add tests/ src/**/*.test.*
-git commit -m "test: Add comprehensive test suite for issue #$ARGUMENTS
+- **New feature**: Test the main happy path + one error case
+- **Bug fix**: Test that reproduces the bug + verify fix
+- **UI change**: Quick Playwright test for critical user flow
+- **Refactor**: Existing tests should still pass
+- **Small change**: Maybe no new tests needed
 
-- Unit tests for core business logic
-- Integration tests for API endpoints  
-- E2E tests for user workflows
-- Tests currently failing (RED phase)
-
-Related to #$ARGUMENTS"
-```
-
-#### Step 3: Implement Code (GREEN)
-
-**A. Backend Implementation**
-```bash
-# Implement minimal code to pass tests
-# Follow test requirements exactly
-# Use TDD red-green-refactor cycle
-```
-
-**B. Frontend Implementation**  
-```bash
-# Implement UI components
-# Follow React 2025 best practices
-# Use Server Components where appropriate
-```
-
-**C. Validate with Playwright MCP**
-```bash
-# Use Playwright MCP to validate UI behavior
-# Natural language commands like:
-# "Test the login form with valid credentials"
-# "Verify error messages display correctly"
-# "Check responsive design on mobile viewport"
-```
-
-#### Step 4: Iterate and Refactor (GREEN → REFACTOR)
-
-**A. Code Quality Pass**
-```bash
-# Refactor while keeping tests green
-# Extract reusable components
-# Optimize performance
-# Improve readability
-```
-
-**B. Additional Test Coverage**
-```bash
-# Add edge case tests
-# Test error conditions
-# Add accessibility tests with Playwright
-```
-
-#### Step 5: Final Commit
-
-```bash
-# Commit working implementation
-git add .
-git commit -m "feat: Implement [feature] for issue #$ARGUMENTS
-
-- ✅ All tests passing (GREEN phase)
-- ✅ Code refactored for quality
-- ✅ UI validated with Playwright
-- ✅ Accessibility requirements met
-- ✅ Performance optimized
-
-Closes #$ARGUMENTS"
-```
-
-### 3.3 Playwright MCP Integration for UI Validation
-
-#### Automated UI Testing
-Use Playwright MCP for comprehensive UI validation:
-
-**A. Functional Testing**
-- Form submissions and validations
-- User interaction flows
-- State management verification
-- API integration testing
-
-**B. Visual Testing**
-- Cross-browser compatibility
-- Responsive design validation
-- Accessibility compliance (WCAG 2.2)
-- Performance metrics collection
-
-**C. User Journey Testing**
-- Complete user workflows
-- Error state handling
-- Loading state validation
-- Multi-step form processes
-
-#### MCP Commands for UI Testing
-```javascript
-// Use natural language with Playwright MCP:
-// "Create a test that validates the login form"
-// "Test the user registration flow end-to-end"
-// "Verify mobile responsiveness of the dashboard"
-// "Check accessibility compliance for the form"
-```
-
-### 3.4 Quality Gates
-
-**Before Each Commit:**
-- [ ] All tests passing (GREEN)
-- [ ] Code coverage targets met
-- [ ] UI validation with Playwright complete
-- [ ] No TypeScript errors
-- [ ] Linting passes
-- [ ] Performance benchmarks acceptable
-
-**Human Review Checkpoints:**
-⚠️ **STOP FOR HUMAN REVIEW** when:
-- Tests reveal design flaws or missing requirements
-- Implementation requires architectural changes
-- Performance issues discovered during testing
-- Accessibility concerns identified
-- Security implications found in testing
+Skip tests for:
+- Trivial getters/setters
+- Framework/library code
+- One-off scripts
+- Pure UI styling
 
 ### 3.5 Implementation Areas
 
@@ -286,57 +167,22 @@ Implement across relevant areas based on issue scope:
 - Add/update user guides
 - Document new features or changes
 
-## Phase 4: Final Quality Validation
+## Phase 4: Quick Quality Check
 
-### 4.1 Comprehensive Test Suite Execution
-
-```bash
-# Run full test suite (should already be passing from TDD)
-npm test                    # Unit and integration tests
-npm run test:e2e           # End-to-end Playwright tests  
-npm run test:coverage      # Verify coverage targets
-npm run test:accessibility # Accessibility compliance tests
-```
-
-### 4.2 Code Quality Validation
+### 4.1 Run Tests & Linting
 
 ```bash
-# Automated quality checks
-npm run lint               # ESLint for code quality
-npm run typecheck         # TypeScript strict checking
-npm run format            # Prettier formatting
-uv run ruff check         # Python linting (if applicable)
-uv run mypy .            # Python type checking (if applicable)
+# Quick quality check
+npm test                   # Run existing tests
+npm run lint              # Fix obvious issues
+npm run typecheck         # TypeScript errors
 ```
 
-### 4.3 Playwright MCP Final Validation
+### 4.2 Manual Smoke Test
 
-Use Playwright MCP for comprehensive final validation:
-
-**Cross-Browser Testing**
-- Test on Chrome, Firefox, Safari
-- Validate mobile and desktop viewports
-- Check touch interactions on mobile
-
-**Performance Validation**
-- Measure page load times
-- Check Core Web Vitals
-- Validate lazy loading behavior
-
-**Accessibility Final Check**
-- Screen reader compatibility
-- Keyboard navigation validation
-- Color contrast verification
-- ARIA labels and roles
-
-### 4.4 Manual Review Checklist
-
-Since tests were written first, manual testing should confirm:
-- [ ] All acceptance criteria met (should be covered by tests)
-- [ ] User experience flows smoothly
-- [ ] Visual design matches specifications
-- [ ] Performance meets requirements
-- [ ] No console errors or warnings
+- [ ] Feature works as expected
+- [ ] No obvious errors in console
+- [ ] Meets the original issue requirements
 
 ## Phase 5: Documentation
 
@@ -355,37 +201,19 @@ Since tests were written first, manual testing should confirm:
 
 ## Phase 6: Final Commit and PR Creation
 
-### 6.1 Final Implementation Commit
+### 6.1 Final Commit
 
 ```bash
-# Ensure all tests are still passing
-npm test && npm run test:e2e
+# Quick final check
+npm test && npm run lint
 
-# Stage final implementation
+# Commit the work
 git add .
+git commit -m "feat: implement issue #$ARGUMENTS
 
-# Create comprehensive final commit
-git commit -m "feat: Complete implementation for issue #$ARGUMENTS
-
-✅ TDD Workflow Summary:
-- Tests written first and committed (RED phase)
-- Implementation follows test requirements (GREEN phase)  
-- Code refactored for quality (REFACTOR phase)
-- Playwright MCP validation completed
-- All quality gates passed
-
-🧪 Test Coverage:
-- Unit tests: [X]% coverage
-- Integration tests: Complete API flows
-- E2E tests: Full user journeys with Playwright
-- Accessibility tests: WCAG 2.2 compliant
-
-🎯 Quality Validation:
-- All tests passing
-- TypeScript strict mode clean
-- Linting and formatting applied
-- Cross-browser compatibility verified
-- Performance benchmarks met
+- Core functionality working
+- Tests passing  
+- Ready for review
 
 Closes #$ARGUMENTS"
 ```
@@ -399,23 +227,12 @@ Use @create-pr.md for standardized PR creation:
 # Include comprehensive testing summary
 ```
 
-### 6.3 Enhanced PR Content Requirements
+### 6.3 Simple PR Content
 
-**Required PR Content:**
-- **Link**: "Closes #$ARGUMENTS"
-- **TDD Summary**: Overview of test-first approach used
-- **Test Coverage**: Unit, integration, and E2E test results
-- **Playwright Validation**: UI testing and accessibility results
-- **Quality Metrics**: Performance, coverage, and compliance data
-- **Screenshots/Videos**: For UI changes (captured via Playwright)
-- **Breaking Changes**: Any API or interface changes
-- **Migration Steps**: Database or configuration changes needed
-
-**Playwright Test Evidence:**
-- Include automated screenshots from Playwright tests
-- Cross-browser compatibility results
-- Mobile responsiveness validation
-- Accessibility compliance report
+**Required:**
+- "Closes #$ARGUMENTS"
+- Brief description of what was implemented
+- Any breaking changes or migration notes
 
 ## Phase 7: GitHub Project Management
 
@@ -435,61 +252,24 @@ gh issue edit $ARGUMENTS --remove-label "in-progress"
 gh pr edit --add-label "ready-for-review"
 ```
 
-## Quality Standards Checklist (Test-First Approach)
+## Quality Standards (Keep It Simple)
 
-**TDD Workflow Compliance**
+**Basic Quality**
+- [ ] Feature works
+- [ ] Tests pass
+- [ ] No TypeScript errors
+- [ ] Files under 300 lines
+- [ ] Code is readable
 
-- [ ] Tests written before implementation (RED phase)
-- [ ] Initial failing tests committed first
-- [ ] Implementation makes tests pass (GREEN phase)
-- [ ] Code refactored while keeping tests green (REFACTOR phase)
-- [ ] Multiple commit cycle followed (test → commit → code → commit)
+**Smart Testing**
+- [ ] Tests cover the important functionality
+- [ ] Bug fixes have a test that would catch regression
+- [ ] Critical user flows work (manual or Playwright test)
 
-**Code Quality**
-
-- [ ] All files under 300 lines
-- [ ] Single responsibility principle followed
-- [ ] Existing patterns and utilities used
-- [ ] Proper error handling implemented
-- [ ] No hardcoded values or magic numbers
-- [ ] TypeScript strict mode compliance
-
-**Comprehensive Testing**
-
-- [ ] **Unit Tests**: All business logic covered (>90% coverage)
-- [ ] **Integration Tests**: API endpoints and data flows tested
-- [ ] **E2E Tests**: Complete user journeys with Playwright MCP
-- [ ] **Accessibility Tests**: WCAG 2.2 compliance verified
-- [ ] **Performance Tests**: Load times and Core Web Vitals measured
-- [ ] **Cross-Browser Tests**: Chrome, Firefox, Safari validated
-- [ ] All tests passing with no flakiness
-
-**Playwright MCP Validation**
-
-- [ ] UI functionality tested via natural language commands
-- [ ] Mobile responsiveness validated
-- [ ] Form interactions and validations tested
-- [ ] Error states and loading states verified
-- [ ] Accessibility compliance automated testing
-- [ ] Screenshots/videos captured for PR documentation
-
-**Documentation & Communication**
-
-- [ ] Code comments for complex logic
-- [ ] API documentation updated
-- [ ] User-facing changes documented
-- [ ] Migration guides provided (if needed)
-- [ ] Test strategy documented in PR
-- [ ] Playwright test results included
-
-**Performance & Accessibility**
-
-- [ ] **WCAG 2.2 Guidelines**: Automated and manual validation
-- [ ] **Keyboard Navigation**: Full keyboard accessibility
-- [ ] **Screen Reader**: Compatible with assistive technologies
-- [ ] **Performance**: No regressions, efficient algorithms
-- [ ] **Bundle Size**: Minimal impact on application size
-- [ ] **Core Web Vitals**: LCP, FID, CLS within targets
+**Documentation** 
+- [ ] Complex logic has comments
+- [ ] Breaking changes documented
+- [ ] User-facing changes explained
 
 ## Integration Points
 
