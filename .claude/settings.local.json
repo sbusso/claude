@@ -25,7 +25,8 @@
       "Bash(touch:*)",
       "Bash(git add:*)",
       "Bash(gh release create:*)",
-      "Bash(gh release view:*)"
+      "Bash(gh release view:*)",
+      "Bash(git rev-parse:*)"
     ],
     "deny": []
   }

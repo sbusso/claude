@@ -7,13 +7,13 @@ This file provides guidance to Claude Code when working with this project.
 This project uses a streamlined GitHub Projects workflow with Claude Code automation:
 
 ### Planning Phase
-- **@feature** - Create features with extended thinking analysis
-- **@tasks** - Break features into implementable tasks with iteration assignment
+- **/project:feature** - Create features with extended thinking analysis
+- **/project:tasks** - Break features into implementable tasks with iteration assignment
 
 ### Implementation Phase  
-- **@do-issue** - Smart test-first development with lean TDD approach
-- **@commit** - Semantic commits with proper formatting
-- **@create-pr** - Standardized pull request creation
+- **/project:do-issue** - Smart test-first development with lean TDD approach
+- **/project:commit** - Semantic commits with proper formatting
+- **/project:create-pr** - Standardized pull request creation
 
 ### GitHub Projects Integration
 - **Status Flow**: Todo → In Progress → Done (auto-managed)
@@ -100,20 +100,27 @@ Enable these GitHub Project automations:
 
 ### Quick Start Commands
 ```bash
-# Plan a new feature
-@feature "add user authentication system"
+# In Claude Code REPL - Plan a new feature
+/project:feature "add user authentication system"
 
 # Break down feature into tasks  
-@tasks "User Authentication System from issue #123"
+/project:tasks "User Authentication System from issue #123"
 
 # Implement a task
-@do-issue 124
+/project:do-issue 124
 
 # Create semantic commit
-@commit "implement user login endpoint"
+/project:commit "implement user login endpoint"
 
 # Create pull request
-@create-pr
+/project:create-pr
+
+# Using shell aliases (after install.sh)
+ccmd feature "add user authentication system"
+ccmd tasks "User Authentication System"  
+ccmd do-issue 124
+ccmd commit "implement user login endpoint"
+ccmd create-pr
 ```
 
 ### Project Management
