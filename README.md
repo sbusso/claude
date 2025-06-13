@@ -298,6 +298,12 @@ Found a bug or want to improve the framework?
 3. Test your changes with the actual workflow
 4. Submit a PR with clear description
 
+## Repository
+
+**GitHub**: https://github.com/sbusso/claude-workflow  
+**Issues**: https://github.com/sbusso/claude-workflow/issues  
+**Releases**: https://github.com/sbusso/claude-workflow/releases
+
 ## License
 
 MIT - Use this framework in any project, commercial or personal.
