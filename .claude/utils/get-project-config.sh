@@ -17,23 +17,43 @@ get_repo_info() {
     echo "$repo_path|$owner"
 }
 
-# Function to discover project
-discover_project() {
+# Function to let user select project interactively
+select_project() {
     local owner="$1"
-    local project_name="${2:-Test}"
     
-    # Get project list and find matching project
-    local project_info=$(gh project list --owner "$owner" --format json | \
-        jq -r --arg name "$project_name" '.projects[] | select(.title == $name) | "\(.number)|\(.id)|\(.title)"')
+    # Get all projects
+    local projects=$(gh project list --owner "$owner" --format json | jq -r '.projects[] | "\(.number)|\(.id)|\(.title)"')
     
-    if [[ -z "$project_info" ]]; then
-        echo "❌ Project '$project_name' not found"
-        echo "Available projects:"
-        gh project list --owner "$owner" | grep -v "^ID"
+    if [[ -z "$projects" ]]; then
+        echo "❌ No projects found for $owner"
+        echo "💡 Create a project: https://github.com/$owner?tab=projects"
         exit 1
     fi
     
-    echo "$project_info"
+    local project_count=$(echo "$projects" | wc -l | tr -d ' ')
+    
+    if [[ "$project_count" -eq 1 ]]; then
+        echo "✅ Found single project, using: $(echo "$projects" | cut -d'|' -f3)"
+        echo "$projects"
+        return
+    fi
+    
+    echo "📋 Available projects:"
+    local i=1
+    while IFS='|' read -r number id title; do
+        echo "  $i. $title"
+        ((i++))
+    done <<< "$projects"
+    echo ""
+    echo -n "Select project number (1-$project_count): "
+    read -r choice
+    
+    if [[ ! "$choice" =~ ^[0-9]+$ ]] || [[ "$choice" -lt 1 ]] || [[ "$choice" -gt "$project_count" ]]; then
+        echo "❌ Invalid selection"
+        exit 1
+    fi
+    
+    echo "$projects" | sed -n "${choice}p"
 }
 
 # Function to get project fields
@@ -84,20 +104,24 @@ get_project_fields() {
 
 # Main function
 main() {
-    echo "🔍 Discovering project configuration..."
+    # Check if config already exists
+    if [[ -f "$CONFIG_FILE" ]]; then
+        echo "✅ Project configuration already exists:"
+        cat "$CONFIG_FILE" | jq -r '"📊 Project: \(.project.name) (#\(.project.number))"'
+        echo "🔄 Delete $CONFIG_FILE to reconfigure"
+        return
+    fi
+    
+    echo "🔍 Setting up project configuration..."
     
     # Get repository info
     IFS='|' read -r repo_path owner <<< "$(get_repo_info)"
     echo "📁 Repository: $repo_path"
     echo "👤 Owner: $owner"
     
-    # Use argument or default project name
-    local project_name="${1:-Test}"
-    echo "🎯 Target project: $project_name"
-    
-    # Discover project
-    IFS='|' read -r project_number project_id project_title <<< "$(discover_project "$owner" "$project_name")"
-    echo "📊 Project: $project_title (#$project_number)"
+    # Let user select project interactively
+    IFS='|' read -r project_number project_id project_title <<< "$(select_project "$owner")"
+    echo "📊 Selected: $project_title (#$project_number)"
     
     # Get project fields
     echo "🔍 Discovering project fields..."

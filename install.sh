@@ -458,67 +458,25 @@ fi
 echo ""
 echo "🎉 Installation complete!"
 echo ""
-echo "## What was installed:"
+
+# Show what's available concisely
 if [ -d ".git" ]; then
-    echo "✅ Shell integration (global commands and aliases)"
-    echo "✅ Project framework (commands, utilities, guidelines)"
+    echo "✅ Framework installed: shell commands, project utilities, MCPs"
 else
-    echo "✅ Shell integration (global commands and aliases)"  
-    echo "⚠️  Project framework skipped (no git repository detected)"
+    echo "✅ Shell commands installed (project features need git repository)"
 fi
+
 echo ""
 echo "## Quick Start"
-echo "1. Run: source ~/.zshrc"
-echo "2. Try: cchelp"
-echo ""
-if [ -d ".git" ] && [ -d ".claude/utils" ]; then
-    echo "## Setup GitHub Projects Workflow"
-    echo "1. Create GitHub Project (on GitHub.com):"
-    echo "   Repository → Projects tab → Link project → New project → Table view"
+echo "Run: source ~/.zshrc && cchelp"
+
+if command -v claude >/dev/null 2>&1 && [ -f ".mcp.json" ]; then
     echo ""
-    echo "2. Add required fields to your project:"
-    echo "   • Status field: Todo, In Progress, Done"
-    echo "   • Iteration field: Create development cycles"
-    echo ""
-    echo "3. Setup repository integration:"
-    echo "   gh auth refresh -s project --hostname github.com"
-    echo "   .claude/utils/setup-labels.sh"
-    echo "   .claude/utils/get-project-config.sh \"Project Name\"  # or project number"
-    echo ""
-    echo "4. Enable GitHub Project automations:"
-    echo "   ✅ Auto-set status to 'Done' when PR merged"
-    echo "   ✅ Auto-close issues when status = 'Done'"
-    echo "   ✅ Auto-set status to 'Todo' when items added"
-    echo ""
-    echo "## Available Commands"
-    echo "Claude Code REPL:"
-    echo "  /project:feature \"description\" - Create feature with GitHub Projects"
-    echo "  /project:tasks \"feature\" - Break down into implementable tasks"
-    echo "  /project:do-issue 123 - Smart test-first development workflow"
-    echo "  /project:commit \"message\" - Semantic commits"
-    echo "  /project:create-pr - Standardized pull requests"
-    echo ""
-    echo "Shell Aliases:"
-    echo "  ccf \"description\" - Create feature"
-    echo "  cct \"feature\" - Create tasks"
-    echo "  cci 123 - Implement issue"
-    echo "  ccc \"message\" - Create commit"
-    echo "  ccpr - Create pull request"
-    echo ""
-    echo "## Workflow Utilities"
-    echo "  .claude/utils/setup-labels.sh - Create required GitHub labels"
-    echo "  .claude/utils/get-project-config.sh - Auto-discover project config"
-    echo "  .claude/utils/move-item-status.sh - Manage GitHub Projects status"
-    echo "  .claude/utils/assign-iteration.sh - Assign items to iterations"
-fi
-echo ""
-if command -v claude >/dev/null 2>&1 && [ -d ".git" ]; then
     echo "## Available MCPs"
-    echo "  • Context7: Add 'use context7' to any prompt for up-to-date docs"
-    echo "  • Playwright: Browser automation and testing capabilities"
-    echo "  • GitHub: Enhanced repository and API integration"
+    echo "Context7, Playwright, GitHub (automatically loaded in Claude Code)"
 fi
+
 echo ""
-echo "📖 See CLAUDE.md for complete workflow documentation"
+echo "📖 Complete docs: CLAUDE.md"
 
 # Version already saved in shell integration section
