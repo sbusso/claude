@@ -332,8 +332,11 @@ if [ -d ".git" ]; then
             }
             
             echo "📄 Downloading .mcp.json configuration..."
-            curl -sSL "$BASE_URL/.mcp.json" -o ".mcp.json" 2>/dev/null || {
+            # Download to temp file first for potential merging
+            TEMP_MCP=$(mktemp)
+            curl -sSL "$BASE_URL/.mcp.json" -o "$TEMP_MCP" 2>/dev/null || {
                 echo "⚠️  Failed to download .mcp.json"
+                rm -f "$TEMP_MCP"
             }
             
             echo "📋 Downloading code guidelines..."
@@ -351,6 +354,39 @@ if [ -d ".git" ]; then
             curl -sSL "$BASE_URL/.claude/utils/merge-mcp.sh" -o ".claude/utils/merge-mcp.sh" 2>/dev/null
             chmod +x .claude/utils/*.sh 2>/dev/null || true
             echo "✅ Downloaded workflow automation utilities"
+            
+            # Now handle MCP configuration merge
+            if [ -f "$TEMP_MCP" ]; then
+                if [ -f ".mcp.json" ]; then
+                    echo "📄 Merging existing .mcp.json with framework MCPs..."
+                    
+                    # Use the JSON merge utility we just downloaded
+                    if [ -f ".claude/utils/merge-mcp.sh" ]; then
+                        bash ".claude/utils/merge-mcp.sh" ".mcp.json" "$TEMP_MCP"
+                    else
+                        echo "⚠️  MCP merge utility not found, using simple merge"
+                        
+                        # Simple fallback merge using jq if available
+                        if command -v jq >/dev/null 2>&1; then
+                            echo "🔄 Using jq for JSON merge..."
+                            BACKUP_MCP=".mcp.json.backup.$(date +%Y%m%d_%H%M%S)"
+                            cp ".mcp.json" "$BACKUP_MCP"
+                            
+                            jq -s '.[0] * .[1]' ".mcp.json" "$TEMP_MCP" > ".mcp.json.tmp" && \
+                                mv ".mcp.json.tmp" ".mcp.json" && \
+                                echo "✅ Merged MCP configurations" || \
+                                echo "⚠️  JSON merge failed, using framework version"
+                        else
+                            echo "📋 jq not available, using framework .mcp.json as-is"
+                            cp "$TEMP_MCP" ".mcp.json"
+                        fi
+                    fi
+                else
+                    cp "$TEMP_MCP" ".mcp.json"
+                    echo "✅ Installed MCP server configuration"
+                fi
+                rm -f "$TEMP_MCP"
+            fi
             
             echo "🔧 Downloading core commands..."
             curl -sSL "$BASE_URL/.claude/commands/do/do-issue.md" -o ".claude/commands/do-issue.md" 2>/dev/null
