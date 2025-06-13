@@ -101,7 +101,7 @@ mkdir -p "$HOME/.claude/commands" 2>/dev/null
 # Install project template files
 if [ -d ".git" ]; then
     # Create .claude directory structure
-    mkdir -p ".claude/utils" ".claude/commands" ".claude/code-guidelines"
+    mkdir -p ".claude/utils" ".claude/commands" ".claude/code-guidelines" ".claude/memory"
     
     # Check what's missing
     MISSING_FILES=false
@@ -148,6 +148,11 @@ if [ -d ".git" ]; then
         # Copy code guidelines  
         cp -r "$SCRIPT_DIR/.claude/code-guidelines/"* ".claude/code-guidelines/" 2>/dev/null
         
+        # Copy memory folder (project setup guidelines)
+        if [ "$FORCE_INSTALL" = true ] || [ ! -f ".claude/memory/project-setup.md" ]; then
+            cp -r "$SCRIPT_DIR/.claude/memory/"* ".claude/memory/" 2>/dev/null || true
+        fi
+        
         # Handle MCP configuration - NO BACKUP SPAM
         if [ -f "$SCRIPT_DIR/.mcp.json" ]; then
             if [ ! -f ".mcp.json" ]; then
@@ -187,6 +192,11 @@ if [ -d ".git" ]; then
             curl -sSL "$BASE_URL/.claude/code-guidelines/python.md" -o ".claude/code-guidelines/python.md" 2>/dev/null
             curl -sSL "$BASE_URL/.claude/code-guidelines/typescript.md" -o ".claude/code-guidelines/typescript.md" 2>/dev/null  
             curl -sSL "$BASE_URL/.claude/code-guidelines/react.md" -o ".claude/code-guidelines/react.md" 2>/dev/null
+            
+            # Download memory folder (project setup guidelines)
+            if [ "$FORCE_INSTALL" = true ] || [ ! -f ".claude/memory/project-setup.md" ]; then
+                curl -sSL "$BASE_URL/.claude/memory/project-setup.md" -o ".claude/memory/project-setup.md" 2>/dev/null
+            fi
             
             curl -sSL "$BASE_URL/.claude/utils/setup-labels.sh" -o ".claude/utils/setup-labels.sh" 2>/dev/null
             curl -sSL "$BASE_URL/.claude/utils/get-project-config.sh" -o ".claude/utils/get-project-config.sh" 2>/dev/null
