@@ -98,9 +98,6 @@ fi
 # Create commands directory if it doesn't exist
 mkdir -p "$HOME/.claude/commands" 2>/dev/null
 
-# Note: Label setup utility is included in the framework at .claude/utils/setup-labels.sh
-# Users can run it directly from the project after installation
-
 # Install project template files
 if [ -d ".git" ]; then
     # Create .claude directory structure
@@ -119,7 +116,7 @@ if [ -d ".git" ]; then
         # Check if we're running from the template repository
         if [ -f "$SCRIPT_DIR/.claude/templates/CLAUDE.md" ]; then
         
-        # Download latest utilities
+            # Download latest utilities
         BASE_URL="https://raw.githubusercontent.com/sbusso/claude-workflow/main"
         curl -sSL "$BASE_URL/.claude/utils/setup-labels.sh" -o ".claude/utils/setup-labels.sh" 2>/dev/null
         curl -sSL "$BASE_URL/.claude/utils/get-project-config.sh" -o ".claude/utils/get-project-config.sh" 2>/dev/null
@@ -169,6 +166,8 @@ if [ -d ".git" ]; then
                 cp "$SCRIPT_DIR/.claude/commands/$cmd" ".claude/commands/$cmd_name"
             fi
         done
+        
+        fi
         
     else
         # Base URL for raw files
@@ -235,7 +234,6 @@ EXAMPLE
     echo "$FRAMEWORK_VERSION" > ".claude/.framework_version" 2>/dev/null
     
 fi
-
 
 # Setup project configuration if needed (for all installation paths)
 if [ -d ".git" ] && [ -f ".claude/utils/get-project-config.sh" ]; then
