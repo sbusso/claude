@@ -17,7 +17,7 @@ This framework provides a complete development workflow that emphasizes:
 
 ```bash
 # Install directly in your project directory
-curl -sSL https://raw.githubusercontent.com/sbusso/claude/main/install.sh | bash
+curl -sSL https://raw.githubusercontent.com/sbusso/claude-workflow/main/install.sh | bash
 ```
 
 That's it! The installer will:
@@ -39,12 +39,12 @@ That's it! The installer will:
 
 ```bash
 # Clone this repository first
-git clone https://github.com/sbusso/claude.git
-cd claude
+git clone https://github.com/sbusso/claude-workflow.git
+cd claude-workflow
 
 # Then run installer in your target project
 cd /path/to/your/project
-/path/to/claude/install.sh
+/path/to/claude-workflow/install.sh
 ```
 
 ## What Gets Installed
