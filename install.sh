@@ -157,7 +157,7 @@ if [ -d ".git" ]; then
     
     # Check what's missing instead of blanket skip
     MISSING_FILES=false
-    if [ ! -f "CLAUDE.md" ] || [ ! -f ".mcp.json" ] || [ ! -f ".claude/commands/do-issue.md" ]; then
+    if [ ! -f "CLAUDE.md" ] || [ ! -f ".mcp.json" ] || [ ! -f ".claude/commands/do-issue.md" ] || [ ! -f ".claude/utils/setup-labels.sh" ]; then
         MISSING_FILES=true
         echo "📦 Detected missing project files, installing..."
     fi
@@ -249,40 +249,24 @@ if [ -d ".git" ]; then
         cp -r "$SCRIPT_DIR/.claude/code-guidelines/"* ".claude/code-guidelines/"
         echo "✅ Installed code quality guidelines"
         
-        # Smart merge MCP configuration using Claude
+        # Smart merge MCP configuration using dedicated JSON merge
         if [ -f "$SCRIPT_DIR/.mcp.json" ]; then
             if [ -f ".mcp.json" ]; then
-                echo "📄 Analyzing existing .mcp.json for smart merge..."
+                echo "📄 Merging existing .mcp.json with framework MCPs..."
                 
-                # Check if framework MCPs already exist
-                if grep -q "context7\|playwright\|github" ".mcp.json"; then
-                    echo "✅ .mcp.json already contains framework MCPs - skipping"
+                # Use dedicated JSON merge utility
+                if [ -f ".claude/utils/merge-mcp.sh" ]; then
+                    bash ".claude/utils/merge-mcp.sh" ".mcp.json" "$SCRIPT_DIR/.mcp.json"
                 else
-                    echo "🤖 Using Claude for intelligent .mcp.json merge..."
+                    echo "⚠️  MCP merge utility not found, using fallback method"
                     
-                    # Backup existing file
-                    cp ".mcp.json" ".mcp.json.backup.$(date +%Y%m%d_%H%M%S)"
-                    
-                    # Check if Claude Code is available for smart merge
-                    if command -v claude >/dev/null 2>&1; then
-                        echo "🔄 Using Claude smart merge for .mcp.json..."
-                        if [ -f ".claude/utils/smart-merge.sh" ]; then
-                            bash ".claude/utils/smart-merge.sh" mcp-json ".mcp.json" "$SCRIPT_DIR/.mcp.json"
-                            if [ $? -eq 0 ]; then
-                                echo "✅ Smart merge completed for .mcp.json"
-                            else
-                                echo "⚠️  Claude merge failed, manual merge required"
-                                echo "📋 Framework MCPs available in $SCRIPT_DIR/.mcp.json"
-                                echo "📋 Your existing .mcp.json backed up as .mcp.json.backup.*"
-                            fi
-                        else
-                            echo "⚠️  Smart merge utility not found, manual merge required"
-                            echo "📋 Framework MCPs available in $SCRIPT_DIR/.mcp.json"
-                            echo "📋 Your existing .mcp.json backed up as .mcp.json.backup.*"
-                        fi
+                    # Fallback: check if framework MCPs already exist
+                    if grep -q "context7\|playwright\|github" ".mcp.json"; then
+                        echo "✅ .mcp.json already contains framework MCPs - skipping"
                     else
-                        echo "⚠️  Claude not available, manual merge required for .mcp.json"
+                        echo "📋 Manual merge required for .mcp.json"
                         echo "📋 Framework MCPs available in $SCRIPT_DIR/.mcp.json"
+                        cp ".mcp.json" ".mcp.json.backup.$(date +%Y%m%d_%H%M%S)"
                         echo "📋 Your existing .mcp.json backed up as .mcp.json.backup.*"
                     fi
                 fi
@@ -342,6 +326,16 @@ if [ -d ".git" ]; then
             curl -sSL "$BASE_URL/.claude/code-guidelines/python.md" -o ".claude/code-guidelines/python.md" 2>/dev/null
             curl -sSL "$BASE_URL/.claude/code-guidelines/typescript.md" -o ".claude/code-guidelines/typescript.md" 2>/dev/null  
             curl -sSL "$BASE_URL/.claude/code-guidelines/react.md" -o ".claude/code-guidelines/react.md" 2>/dev/null
+            
+            echo "🔧 Downloading workflow utilities..."
+            curl -sSL "$BASE_URL/.claude/utils/setup-labels.sh" -o ".claude/utils/setup-labels.sh" 2>/dev/null
+            curl -sSL "$BASE_URL/.claude/utils/get-project-config.sh" -o ".claude/utils/get-project-config.sh" 2>/dev/null
+            curl -sSL "$BASE_URL/.claude/utils/move-item-status.sh" -o ".claude/utils/move-item-status.sh" 2>/dev/null
+            curl -sSL "$BASE_URL/.claude/utils/assign-iteration.sh" -o ".claude/utils/assign-iteration.sh" 2>/dev/null
+            curl -sSL "$BASE_URL/.claude/utils/smart-merge.sh" -o ".claude/utils/smart-merge.sh" 2>/dev/null
+            curl -sSL "$BASE_URL/.claude/utils/merge-mcp.sh" -o ".claude/utils/merge-mcp.sh" 2>/dev/null
+            chmod +x .claude/utils/*.sh 2>/dev/null || true
+            echo "✅ Downloaded workflow automation utilities"
             
             echo "🔧 Downloading core commands..."
             curl -sSL "$BASE_URL/.claude/commands/do/do-issue.md" -o ".claude/commands/do-issue.md" 2>/dev/null
