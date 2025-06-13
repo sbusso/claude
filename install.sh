@@ -318,6 +318,28 @@ EXAMPLE
     echo "$FRAMEWORK_VERSION" > "$PROJECT_VERSION_FILE"
     echo "💾 Project framework version $FRAMEWORK_VERSION installed"
     
+else
+    echo ""
+    echo "⚠️  No git repository detected in current directory"
+    echo ""
+    echo "The shell integration has been installed, but project framework files"
+    echo "require a git repository. To get the complete installation:"
+    echo ""
+    echo "1. Navigate to your project directory:"
+    echo "   cd /path/to/your/project"
+    echo ""
+    echo "2. Initialize git if needed:"
+    echo "   git init"
+    echo ""
+    echo "3. Run the installer again:"
+    echo "   curl -sSL https://raw.githubusercontent.com/sbusso/claude-workflow/main/install.sh | bash"
+    echo ""
+    echo "Or run in an existing git repository to get:"
+    echo "  • .claude/commands/ - Workflow commands"
+    echo "  • .claude/utils/ - Automation utilities"
+    echo "  • .claude/code-guidelines/ - Development standards"
+    echo "  • CLAUDE.md - Project documentation"
+    echo "  • .mcp.json - MCP server configuration"
 fi
 
 # Setup MCPs for Claude Code if available
@@ -369,11 +391,20 @@ fi
 echo ""
 echo "🎉 Installation complete!"
 echo ""
+echo "## What was installed:"
+if [ -d ".git" ]; then
+    echo "✅ Shell integration (global commands and aliases)"
+    echo "✅ Project framework (commands, utilities, guidelines)"
+else
+    echo "✅ Shell integration (global commands and aliases)"  
+    echo "⚠️  Project framework skipped (no git repository detected)"
+fi
+echo ""
 echo "## Quick Start"
 echo "1. Run: source ~/.zshrc"
 echo "2. Try: cchelp"
 echo ""
-if [ -d ".claude/utils" ]; then
+if [ -d ".git" ] && [ -d ".claude/utils" ]; then
     echo "## Setup GitHub Projects Workflow"
     echo "1. Ensure GitHub CLI project access:"
     echo "   gh auth refresh -s project --hostname github.com"
@@ -412,7 +443,7 @@ if [ -d ".claude/utils" ]; then
     echo "  .claude/utils/assign-iteration.sh - Assign items to iterations"
 fi
 echo ""
-if command -v claude >/dev/null 2>&1; then
+if command -v claude >/dev/null 2>&1 && [ -d ".git" ]; then
     echo "## Available MCPs"
     echo "  • Context7: Add 'use context7' to any prompt for up-to-date docs"
     echo "  • Playwright: Browser automation and testing capabilities"
