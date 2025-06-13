@@ -3,11 +3,17 @@
 
 SHELL_RC="$HOME/.zshrc"
 
+# Check for force flag
+FORCE_INSTALL=false
+if [[ "$1" == "--force" ]]; then
+    FORCE_INSTALL=true
+fi
+
 # Auto-detect framework version from git if available, otherwise use hardcoded
 if command -v git >/dev/null 2>&1 && [ -d ".git" ]; then
     FRAMEWORK_VERSION=$(git rev-parse --short HEAD 2>/dev/null || echo "unknown")
 else
-    FRAMEWORK_VERSION="ee5f614"  # Fallback commit hash for curl installs
+    FRAMEWORK_VERSION="1725d60"  # Fallback commit hash for curl installs
 fi
 
 VERSION_FILE="$HOME/.claude/.framework_version"
@@ -15,17 +21,21 @@ VERSION_FILE="$HOME/.claude/.framework_version"
 echo "🚀 Installing Claude workflow framework..."
 
 # Check if already installed and up-to-date
-if [ -f "$VERSION_FILE" ]; then
+if [ -f "$VERSION_FILE" ] && [ "$FORCE_INSTALL" = false ]; then
     INSTALLED_VERSION=$(cat "$VERSION_FILE")
     if [ "$INSTALLED_VERSION" = "$FRAMEWORK_VERSION" ]; then
         echo "✅ Framework already up-to-date (version $FRAMEWORK_VERSION)"
-        echo "ℹ️  To force reinstall, run: rm $VERSION_FILE && ./install.sh"
+        echo "ℹ️  To force reinstall: curl -sSL ... | bash -s -- --force"
         exit 0
     else
         echo "📦 Updating framework from $INSTALLED_VERSION to $FRAMEWORK_VERSION"
     fi
 else
-    echo "📦 Installing framework version $FRAMEWORK_VERSION"
+    if [ "$FORCE_INSTALL" = true ]; then
+        echo "🔄 Force reinstalling framework version $FRAMEWORK_VERSION"
+    else
+        echo "📦 Installing framework version $FRAMEWORK_VERSION"
+    fi
 fi
 
 # Backup existing RC file
@@ -34,12 +44,20 @@ echo "✅ Created backup of $SHELL_RC"
 
 # Check if our section already exists
 if grep -q "# Claude Command Shortcuts" "$SHELL_RC"; then
-    echo "⚠️  Claude commands already installed."
-    echo -n "Replace existing installation? (y/n): "
-    read response
-    if [[ "$response" != "y" ]]; then
-        echo "❌ Installation cancelled."
-        exit 0
+    # Check if we're in an interactive shell or piped from curl
+    if [[ -t 0 ]]; then
+        # Interactive mode - ask user
+        echo "⚠️  Claude commands already installed."
+        echo -n "Replace existing installation? (y/n): "
+        read response
+        if [[ "$response" != "y" ]]; then
+            echo "❌ Installation cancelled."
+            exit 0
+        fi
+        echo "🔄 Replacing existing installation..."
+    else
+        # Non-interactive mode (piped from curl) - smart update
+        echo "🔄 Updating existing Claude commands installation..."
     fi
     
     # Remove existing section
@@ -120,25 +138,31 @@ if [ -d ".git" ]; then
     PROJECT_VERSION_FILE=".claude/.framework_version"
     if [ -f "$PROJECT_VERSION_FILE" ]; then
         PROJECT_INSTALLED_VERSION=$(cat "$PROJECT_VERSION_FILE")
-        if [ "$PROJECT_INSTALLED_VERSION" = "$FRAMEWORK_VERSION" ]; then
+        if [ "$PROJECT_INSTALLED_VERSION" = "$FRAMEWORK_VERSION" ] && [ "$FORCE_INSTALL" = false ]; then
             echo "✅ Project framework already up-to-date (version $FRAMEWORK_VERSION)"
+            echo "ℹ️  Use --force flag to reinstall: curl -sSL ... | bash -s -- --force"
+            # Skip installation but still continue to MCP setup
+            SKIP_PROJECT_INSTALL=true
         else
             echo "📦 Updating project framework from $PROJECT_INSTALLED_VERSION to $FRAMEWORK_VERSION"
+            SKIP_PROJECT_INSTALL=false
         fi
     else
         echo "📦 Installing project framework version $FRAMEWORK_VERSION"
+        SKIP_PROJECT_INSTALL=false
     fi
     
-    # Create .claude directory structure
-    mkdir -p ".claude/utils"
-    mkdir -p ".claude/commands"
-    mkdir -p ".claude/code-guidelines"
-    
-    # Get the script directory (where install.sh is located)
-    SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-    
-    # Check if we're running from the template repository
-    if [ -f "$SCRIPT_DIR/.claude/templates/CLAUDE.md" ]; then
+    if [ "$SKIP_PROJECT_INSTALL" = false ]; then
+        # Create .claude directory structure
+        mkdir -p ".claude/utils"
+        mkdir -p ".claude/commands"
+        mkdir -p ".claude/code-guidelines"
+        
+        # Get the script directory (where install.sh is located)
+        SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+        
+        # Check if we're running from the template repository
+        if [ -f "$SCRIPT_DIR/.claude/templates/CLAUDE.md" ]; then
         echo "🚀 Installing from template repository..."
         
         # Copy utilities first (needed for smart merge)
@@ -311,12 +335,15 @@ EXAMPLE
         echo "ℹ️  For full framework installation, run this script from the template repository"
     fi
     
-    # Make utilities executable
-    chmod +x .claude/utils/*.sh 2>/dev/null || true
-    
-    # Save project framework version
-    echo "$FRAMEWORK_VERSION" > "$PROJECT_VERSION_FILE"
-    echo "💾 Project framework version $FRAMEWORK_VERSION installed"
+        # Make utilities executable
+        chmod +x .claude/utils/*.sh 2>/dev/null || true
+        
+        # Save project framework version
+        echo "$FRAMEWORK_VERSION" > "$PROJECT_VERSION_FILE"
+        echo "💾 Project framework version $FRAMEWORK_VERSION installed"
+    else
+        echo "ℹ️  Skipped project file installation - already up to date"
+    fi
     
 else
     echo ""
