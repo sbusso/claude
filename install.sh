@@ -160,15 +160,19 @@ if [ -d ".git" ]; then
             fi
         fi
         
-        # Copy essential commands
+        # Copy essential commands with proper directory structure
         COMMANDS=("do/do-issue.md" "do/commit.md" "do/create-pr.md" "plan/feature.md" "plan/tasks.md")
         
         for cmd in "${COMMANDS[@]}"; do
-            cmd_name=$(basename "$cmd")
-            if [ ! -f ".claude/commands/$cmd_name" ] || ! diff -q "$SCRIPT_DIR/.claude/commands/$cmd" ".claude/commands/$cmd_name" >/dev/null 2>&1; then
-                cp ".claude/commands/$cmd_name" ".claude/commands/$cmd_name.backup.$(date +%Y%m%d_%H%M%S)" 2>/dev/null || true
-                mkdir -p ".claude/commands/$(dirname "$cmd")" 2>/dev/null || mkdir -p ".claude/commands"
-                cp "$SCRIPT_DIR/.claude/commands/$cmd" ".claude/commands/$cmd_name"
+            target_path=".claude/commands/$cmd"
+            if [ ! -f "$target_path" ] || ! diff -q "$SCRIPT_DIR/.claude/commands/$cmd" "$target_path" >/dev/null 2>&1; then
+                # Backup existing file if different
+                if [ -f "$target_path" ]; then
+                    cp "$target_path" "$target_path.backup.$(date +%Y%m%d_%H%M%S)" 2>/dev/null || true
+                fi
+                # Create directory structure and copy
+                mkdir -p ".claude/commands/$(dirname "$cmd")" 2>/dev/null
+                cp "$SCRIPT_DIR/.claude/commands/$cmd" "$target_path"
             fi
         done
         
@@ -214,11 +218,13 @@ if [ -d ".git" ]; then
                 rm -f "$TEMP_MCP"
             fi
             
-            curl -sSL "$BASE_URL/.claude/commands/do/do-issue.md" -o ".claude/commands/do-issue.md" 2>/dev/null
-            curl -sSL "$BASE_URL/.claude/commands/do/commit.md" -o ".claude/commands/commit.md" 2>/dev/null
-            curl -sSL "$BASE_URL/.claude/commands/do/create-pr.md" -o ".claude/commands/create-pr.md" 2>/dev/null
-            curl -sSL "$BASE_URL/.claude/commands/plan/feature.md" -o ".claude/commands/feature.md" 2>/dev/null
-            curl -sSL "$BASE_URL/.claude/commands/plan/tasks.md" -o ".claude/commands/tasks.md" 2>/dev/null
+            # Download commands with proper directory structure
+            mkdir -p ".claude/commands/do" ".claude/commands/plan"
+            curl -sSL "$BASE_URL/.claude/commands/do/do-issue.md" -o ".claude/commands/do/do-issue.md" 2>/dev/null
+            curl -sSL "$BASE_URL/.claude/commands/do/commit.md" -o ".claude/commands/do/commit.md" 2>/dev/null
+            curl -sSL "$BASE_URL/.claude/commands/do/create-pr.md" -o ".claude/commands/do/create-pr.md" 2>/dev/null
+            curl -sSL "$BASE_URL/.claude/commands/plan/feature.md" -o ".claude/commands/plan/feature.md" 2>/dev/null
+            curl -sSL "$BASE_URL/.claude/commands/plan/tasks.md" -o ".claude/commands/plan/tasks.md" 2>/dev/null
         else
             # Create basic example command
             cat > ".claude/commands/create-issue.md" << 'EXAMPLE'
