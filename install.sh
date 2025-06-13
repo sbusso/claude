@@ -423,14 +423,6 @@ EXAMPLE
         echo "$FRAMEWORK_VERSION" > "$PROJECT_VERSION_FILE"
         echo "💾 Project framework version $FRAMEWORK_VERSION installed"
         
-        # Setup project configuration only if project number not configured
-        if [ -f ".claude/utils/get-project-config.sh" ]; then
-            if [ ! -f ".claude/project-config.json" ] || ! jq -e '.project.number' ".claude/project-config.json" >/dev/null 2>&1; then
-                echo ""
-                echo "🔧 Setting up project configuration..."
-                bash ".claude/utils/get-project-config.sh"
-            fi
-        fi
     else
         if [ "$MISSING_FILES" = true ]; then
             echo "✅ Installed missing project files"
@@ -463,6 +455,15 @@ else
     echo "  • .mcp.json - MCP server configuration"
 fi
 
+
+# Setup project configuration if needed (for all installation paths)
+if [ -d ".git" ] && [ -f ".claude/utils/get-project-config.sh" ]; then
+    if [ ! -f ".claude/project-config.json" ] || ! jq -e '.project.number' ".claude/project-config.json" >/dev/null 2>&1; then
+        echo ""
+        echo "🔧 Setting up project configuration..."
+        bash ".claude/utils/get-project-config.sh"
+    fi
+fi
 
 echo ""
 echo "🎉 Installation complete!"
