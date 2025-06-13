@@ -149,12 +149,20 @@ if [ -d ".git" ]; then
         SKIP_PROJECT_INSTALL=false
     fi
     
-    if [ "$SKIP_PROJECT_INSTALL" = false ]; then
-        # Create .claude directory structure
-        mkdir -p ".claude/utils"
-        mkdir -p ".claude/commands"
-        mkdir -p ".claude/code-guidelines"
-        
+    # Always check for missing files, regardless of version
+    # Create .claude directory structure
+    mkdir -p ".claude/utils"
+    mkdir -p ".claude/commands"
+    mkdir -p ".claude/code-guidelines"
+    
+    # Check what's missing instead of blanket skip
+    MISSING_FILES=false
+    if [ ! -f "CLAUDE.md" ] || [ ! -f ".mcp.json" ] || [ ! -f ".claude/commands/do-issue.md" ]; then
+        MISSING_FILES=true
+        echo "📦 Detected missing project files, installing..."
+    fi
+    
+    if [ "$SKIP_PROJECT_INSTALL" = false ] || [ "$MISSING_FILES" = true ]; then
         # Get the script directory (where install.sh is located)
         SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
         
@@ -370,7 +378,11 @@ EXAMPLE
         echo "$FRAMEWORK_VERSION" > "$PROJECT_VERSION_FILE"
         echo "💾 Project framework version $FRAMEWORK_VERSION installed"
     else
-        echo "ℹ️  Skipped project file installation - already up to date"
+        if [ "$MISSING_FILES" = true ]; then
+            echo "✅ Installed missing project files"
+        else
+            echo "ℹ️  All project files already present and up to date"
+        fi
     fi
     
 else
