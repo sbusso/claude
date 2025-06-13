@@ -4,8 +4,8 @@
 
 set -e
 
-echo "🚀 Claude Workflow Framework Bootstrap"
-echo "📥 Fetching latest installer..."
+echo "Claude Workflow Framework Bootstrap"
+echo "Fetching latest installer..."
 
 # Generate timestamp for cache busting
 TIMESTAMP=$(date +%s)
@@ -20,13 +20,13 @@ curl -sSL \
 
 # Verify we got a valid script
 if ! head -1 "$TEMP_INSTALLER" | grep -q "#!/"; then
-    echo "❌ Failed to download valid installer"
+    echo "Failed to download valid installer"
     rm -f "$TEMP_INSTALLER"
     exit 1
 fi
 
-echo "✅ Latest installer downloaded"
-echo "🔧 Running installation..."
+echo "Latest installer downloaded"
+echo "Running installation..."
 echo ""
 
 # Make executable and run with all arguments
