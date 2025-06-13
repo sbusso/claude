@@ -44,21 +44,8 @@ echo "✅ Created backup of $SHELL_RC"
 
 # Check if our section already exists
 if grep -q "# Claude Command Shortcuts" "$SHELL_RC"; then
-    # Check if we're in an interactive shell or piped from curl
-    if [[ -t 0 ]]; then
-        # Interactive mode - ask user
-        echo "⚠️  Claude commands already installed."
-        echo -n "Replace existing installation? (y/n): "
-        read response
-        if [[ "$response" != "y" ]]; then
-            echo "❌ Installation cancelled."
-            exit 0
-        fi
-        echo "🔄 Replacing existing installation..."
-    else
-        # Non-interactive mode (piped from curl) - smart update
-        echo "🔄 Updating existing Claude commands installation..."
-    fi
+    # Always auto-update for better user experience - no interactive prompts
+    echo "🔄 Updating existing Claude commands installation..."
     
     # Remove existing section
     # Using a temporary file for compatibility with both Linux and macOS
