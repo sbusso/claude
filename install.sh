@@ -67,30 +67,30 @@ ccmd() {
     claude "/project:${command} \"$*\""
 }
 
-# Common aliases for frequently used commands
-alias cci='ccmd create-issue'      # Create GitHub issue from feature request
-alias cfi='ccmd fix-issue'         # Fix a specific issue
-alias cco='ccmd optimize'          # Optimize code
-alias ccr='ccmd review'            # Code review
-alias cct='ccmd test'              # Generate tests
-alias ccd='ccmd document'          # Generate documentation
-alias ccs='ccmd security-review'   # Security analysis
-alias ccref='ccmd refactor'        # Refactor code
+# Common aliases for available commands
+alias ccf='ccmd feature'           # Create features with GitHub Projects
+alias cct='ccmd tasks'             # Break features into tasks
+alias cci='ccmd do-issue'          # Implement issue with TDD workflow
+alias ccfi='ccmd fix-issue'        # Fix a specific issue
+alias ccc='ccmd commit'            # Create semantic commits
+alias ccpr='ccmd create-pr'        # Create pull requests
+alias ccw='ccmd create-worktrees'  # Create git worktrees
+alias ccb='ccmd brainstorm'        # Brainstorm with extended thinking
 
 # Help function to list all commands
 cchelp() {
     echo "Claude Command Shortcuts:"
     echo "  ccmd <command> <args>  - Run any project command"
     echo ""
-    echo "Common aliases:"
-    echo "  cci \"feature\"        - Create GitHub issue"
-    echo "  cfi \"issue #\"        - Fix specific issue"
-    echo "  cco \"code\"           - Optimize code"
-    echo "  ccr \"code\"           - Review code"
-    echo "  cct \"code\"           - Generate tests"
-    echo "  ccd \"code\"           - Document code"
-    echo "  ccs \"code\"           - Security review"
-    echo "  ccref \"code\"         - Refactor code"
+    echo "Available aliases:"
+    echo "  ccf \"description\"    - Create feature with GitHub Projects"
+    echo "  cct \"feature\"        - Break feature into tasks"
+    echo "  cci 123               - Implement issue with TDD workflow"
+    echo "  ccfi 123              - Fix specific issue"
+    echo "  ccc \"message\"        - Create semantic commit"
+    echo "  ccpr                  - Create pull request"
+    echo "  ccw                   - Create git worktrees"
+    echo "  ccb \"topic\"          - Brainstorm with extended thinking"
     echo ""
     echo "Run 'ccmd' without arguments for usage"
 }
@@ -391,14 +391,19 @@ if [ -d ".claude/utils" ]; then
     echo "   ✅ Auto-set status to 'Todo' when items added"
     echo ""
     echo "## Available Commands"
-    echo "Planning:"
-    echo "  @feature \"description\" - Create feature with GitHub Projects"
-    echo "  @tasks \"feature\" - Break down into implementable tasks"
+    echo "Claude Code REPL:"
+    echo "  /project:feature \"description\" - Create feature with GitHub Projects"
+    echo "  /project:tasks \"feature\" - Break down into implementable tasks"
+    echo "  /project:do-issue 123 - Smart test-first development workflow"
+    echo "  /project:commit \"message\" - Semantic commits"
+    echo "  /project:create-pr - Standardized pull requests"
     echo ""
-    echo "Implementation:"  
-    echo "  @do-issue 123 - Smart test-first development workflow"
-    echo "  @commit \"message\" - Semantic commits"
-    echo "  @create-pr - Standardized pull requests"
+    echo "Shell Aliases:"
+    echo "  ccf \"description\" - Create feature"
+    echo "  cct \"feature\" - Create tasks"
+    echo "  cci 123 - Implement issue"
+    echo "  ccc \"message\" - Create commit"
+    echo "  ccpr - Create pull request"
     echo ""
     echo "## Workflow Utilities"
     echo "  .claude/utils/setup-labels.sh - Create required GitHub labels"

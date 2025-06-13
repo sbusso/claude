@@ -91,11 +91,11 @@ In your GitHub Project, ensure you have:
 /project:create-pr
 
 # Using shell aliases
-cci "add user authentication system"    # create issue
-ccmd tasks "User Authentication System"
-ccmd do-issue 123
-ccmd commit "implement login endpoint"
-ccmd create-pr
+ccf "add user authentication system"    # create feature
+cct "User Authentication System"       # create tasks  
+cci 123                                # implement issue
+ccc "implement login endpoint"         # create commit
+ccpr                                   # create PR
 ```
 
 ## Core Workflow
@@ -157,20 +157,27 @@ ccmd create-pr
 
 **2. Shell Aliases (After Installation)**
 ```bash
-# Generic command runner
+# Generic command runner  
 ccmd feature "description"
 ccmd do-issue 123
+
+# Or use aliases
+ccf "description"  # feature
+cci 123           # do-issue
 ```
 
 ## Available Tools
 
 ### Shell Commands
 ```bash
-cci "feature description"    # Create issue  
-cfi 123                      # Fix issue
-cco "code"                   # Optimize code
-ccr "code"                   # Review code
-cct "code"                   # Generate tests
+ccf "feature description"    # Create feature
+cct "feature name"           # Create tasks  
+cci 123                      # Implement issue
+ccfi 123                     # Fix issue
+ccc "commit message"         # Create commit
+ccpr                         # Create PR
+ccb "brainstorm topic"       # Brainstorm ideas
+ccw                          # Create worktrees
 ```
 
 ### Workflow Utilities

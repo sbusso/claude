@@ -116,11 +116,11 @@ Enable these GitHub Project automations:
 /project:create-pr
 
 # Using shell aliases (after install.sh)
-ccmd feature "add user authentication system"
-ccmd tasks "User Authentication System"  
-ccmd do-issue 124
-ccmd commit "implement user login endpoint"
-ccmd create-pr
+ccf "add user authentication system"     # feature
+cct "User Authentication System"         # tasks  
+cci 124                                  # do-issue
+ccc "implement user login endpoint"      # commit
+ccpr                                     # create-pr
 ```
 
 ### Project Management
