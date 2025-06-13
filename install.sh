@@ -495,6 +495,4 @@ if command -v claude >/dev/null 2>&1 && [ -f ".mcp.json" ]; then
 fi
 
 echo ""
-echo "Run: source ~/.zshrc
-
-# Version already saved in shell integration section
+echo "Run: source ~/.zshrc"
