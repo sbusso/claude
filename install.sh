@@ -88,20 +88,62 @@ fi
 # Note: Label setup utility is included in the framework at .claude/utils/setup-labels.sh
 # Users can run it directly from the project after installation
 
-# Offer to create project commands directory
+# Install project template files
 if [ -d ".git" ]; then
     echo ""
-    if [ -d ".claude/commands" ]; then
-        echo -n "📁 .claude/commands already exists. Replace example commands? (y/n): "
-    else
-        echo -n "📁 Git repository detected. Create .claude/commands for project-specific commands? (y/n): "
-    fi
+    echo "📁 Git repository detected. Installing Claude Code workflow framework..."
     
-    read response
-    if [[ "$response" == "y" ]]; then
-        mkdir -p ".claude/commands"
+    # Create .claude directory structure
+    mkdir -p ".claude/utils"
+    mkdir -p ".claude/commands"
+    mkdir -p ".claude/code-guidelines"
+    
+    # Get the script directory (where install.sh is located)
+    SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+    
+    # Check if we're running from the template repository
+    if [ -f "$SCRIPT_DIR/.claude/templates/CLAUDE.md" ]; then
+        echo "🚀 Installing from template repository..."
         
-        # Create example command
+        # Copy template CLAUDE.md to project root
+        if [ -f "CLAUDE.md" ]; then
+            echo -n "📄 CLAUDE.md already exists. Replace with framework template? (y/n): "
+            read response
+            if [[ "$response" == "y" ]]; then
+                cp "$SCRIPT_DIR/.claude/templates/CLAUDE.md" "CLAUDE.md"
+                echo "✅ Updated project CLAUDE.md with workflow framework"
+            fi
+        else
+            cp "$SCRIPT_DIR/.claude/templates/CLAUDE.md" "CLAUDE.md"
+            echo "✅ Created project CLAUDE.md with workflow framework"
+        fi
+        
+        # Copy utilities
+        cp -r "$SCRIPT_DIR/.claude/utils/"* ".claude/utils/"
+        echo "✅ Installed workflow automation utilities"
+        
+        # Copy code guidelines  
+        cp -r "$SCRIPT_DIR/.claude/code-guidelines/"* ".claude/code-guidelines/"
+        echo "✅ Installed code quality guidelines"
+        
+        # Copy MCP configuration
+        if [ -f "$SCRIPT_DIR/.mcp.json" ]; then
+            cp "$SCRIPT_DIR/.mcp.json" ".mcp.json"
+            echo "✅ Installed MCP server configuration"
+        fi
+        
+        # Copy essential commands
+        cp "$SCRIPT_DIR/.claude/commands/do/do-issue.md" ".claude/commands/"
+        cp "$SCRIPT_DIR/.claude/commands/do/commit.md" ".claude/commands/"
+        cp "$SCRIPT_DIR/.claude/commands/do/create-pr.md" ".claude/commands/"
+        cp "$SCRIPT_DIR/.claude/commands/plan/feature.md" ".claude/commands/"
+        cp "$SCRIPT_DIR/.claude/commands/plan/tasks.md" ".claude/commands/"
+        echo "✅ Installed core workflow commands"
+        
+    else
+        echo "⚠️  Template files not found. Creating basic structure..."
+        
+        # Create basic example command
         cat > ".claude/commands/create-issue.md" << 'EXAMPLE'
 Transform the following feature request into a comprehensive GitHub issue: $ARGUMENTS
 
@@ -116,7 +158,12 @@ Create a well-structured issue with:
 Then create the issue using gh CLI.
 EXAMPLE
         echo "✅ Created example create-issue command"
+        echo "ℹ️  For full framework installation, run this script from the template repository"
     fi
+    
+    # Make utilities executable
+    chmod +x .claude/utils/*.sh 2>/dev/null || true
+    
 fi
 
 # Setup MCPs for Claude Code if available
@@ -168,22 +215,49 @@ fi
 echo ""
 echo "🎉 Installation complete!"
 echo ""
-echo "To start using the commands:"
-echo "  1. Run: source ~/.zshrc"
-echo "  2. Try: cchelp"
-echo "  3. Example: cci \"add user authentication\""
+echo "## Quick Start"
+echo "1. Run: source ~/.zshrc"
+echo "2. Try: cchelp"
 echo ""
 if [ -d ".claude/utils" ]; then
-    echo "🛠️ Framework utilities available:"
-    echo "  • .claude/utils/setup-labels.sh - Create required GitHub labels"
-    echo "  • .claude/utils/get-project-config.sh - Auto-discover project config"
-    echo "  • .claude/utils/move-item-status.sh - Manage GitHub Projects status"
-    echo "  • .claude/utils/assign-iteration.sh - Assign items to iterations"
+    echo "## Setup GitHub Projects Workflow"
+    echo "1. Ensure GitHub CLI project access:"
+    echo "   gh auth refresh -s project --hostname github.com"
+    echo ""
+    echo "2. Create workflow labels (run once per repository):"
+    echo "   .claude/utils/setup-labels.sh"
+    echo ""
+    echo "3. Configure your GitHub Project with fields:"
+    echo "   • Status: Todo, In Progress, Done"
+    echo "   • Iteration: Current and future iterations"
+    echo ""
+    echo "4. Enable GitHub Project automations:"
+    echo "   ✅ Auto-set status to 'Done' when PR merged"
+    echo "   ✅ Auto-close issues when status = 'Done'"
+    echo "   ✅ Auto-set status to 'Todo' when items added"
+    echo ""
+    echo "## Available Commands"
+    echo "Planning:"
+    echo "  @feature \"description\" - Create feature with GitHub Projects"
+    echo "  @tasks \"feature\" - Break down into implementable tasks"
+    echo ""
+    echo "Implementation:"  
+    echo "  @do-issue 123 - Smart test-first development workflow"
+    echo "  @commit \"message\" - Semantic commits"
+    echo "  @create-pr - Standardized pull requests"
+    echo ""
+    echo "## Workflow Utilities"
+    echo "  .claude/utils/setup-labels.sh - Create required GitHub labels"
+    echo "  .claude/utils/get-project-config.sh - Auto-discover project config"
+    echo "  .claude/utils/move-item-status.sh - Manage GitHub Projects status"
+    echo "  .claude/utils/assign-iteration.sh - Assign items to iterations"
 fi
 echo ""
 if command -v claude >/dev/null 2>&1; then
-    echo "📚 Available MCPs:"
+    echo "## Available MCPs"
     echo "  • Context7: Add 'use context7' to any prompt for up-to-date docs"
     echo "  • Playwright: Browser automation and testing capabilities"
     echo "  • GitHub: Enhanced repository and API integration"
 fi
+echo ""
+echo "📖 See CLAUDE.md for complete workflow documentation"

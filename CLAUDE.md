@@ -250,7 +250,7 @@ GitHub Projects should have these fields:
 - **Project targeting**: Pass project name as argument, defaults to "Test"
 - **Updates**: Re-run configuration discovery when project structure changes
 
-### GitHub's Built-in Automations (2025)
+### GitHub's Built-in Automations
 Enable these default workflows in your GitHub Project:
 - ✅ Auto-set status to "Done" when PR merged
 - ✅ Auto-close issues when status = "Done"  
