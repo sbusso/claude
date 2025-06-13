@@ -75,26 +75,51 @@ Located in `.claude/utils/`:
 
 ## GitHub Projects Setup
 
-### Prerequisites  
+### Step 1: Create GitHub Project
+```bash
+# 1. Go to your repository on GitHub.com
+# 2. Click "Projects" tab → "Link a project" → "New project"
+# 3. Choose "Table" view
+# 4. Name it (e.g., "Development Workflow")
+```
+
+### Step 2: Configure Project Fields
+Add these required fields to your project:
+
+**Status Field** (Single select):
+- Todo
+- In Progress  
+- Done
+
+**Iteration Field** (Iteration):
+- Create iterations for your development cycles
+- Mark one as "Current" for active work
+
+### Step 3: Setup Repository Integration
 ```bash
 # Ensure GitHub CLI has project access
 gh auth refresh -s project --hostname github.com
 
 # Create workflow labels (run once per repository)
 .claude/utils/setup-labels.sh
+
+# Configure project (choose one):
+.claude/utils/get-project-config.sh                    # Auto-detect if single project
+.claude/utils/get-project-config.sh "My Project"       # Specify by name
+.claude/utils/get-project-config.sh 5                  # Specify by number
 ```
 
-### Project Configuration
-The framework auto-discovers your GitHub Project configuration:
-- **Status field**: Todo, In Progress, Done
-- **Iteration field**: Current and future iterations  
-- **Auto-caching**: Configuration stored in `project-config.json`
-
-### Built-in Automations
-Enable these GitHub Project automations:
+### Step 4: Enable Project Automations
+In your GitHub Project settings, enable:
 - ✅ Auto-set status to "Done" when PR merged
 - ✅ Auto-close issues when status = "Done"
 - ✅ Auto-set status to "Todo" when items added
+
+### Project Configuration
+The framework auto-discovers your GitHub Project:
+- **Auto-detection**: Finds project linked to your repository
+- **Field mapping**: Maps Status and Iteration fields automatically
+- **Caching**: Stores configuration in `project-config.json` for speed
 
 ## Command Reference
 
