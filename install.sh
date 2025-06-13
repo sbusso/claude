@@ -20,15 +20,15 @@ VERSION_FILE="$HOME/.claude/.framework_version"
 
 echo "🚀 Installing Claude workflow framework..."
 
-# Check if already installed and up-to-date
+# Check shell integration version
+SHELL_NEEDS_UPDATE=true
 if [ -f "$VERSION_FILE" ] && [ "$FORCE_INSTALL" = false ]; then
     INSTALLED_VERSION=$(cat "$VERSION_FILE")
     if [ "$INSTALLED_VERSION" = "$FRAMEWORK_VERSION" ]; then
-        echo "✅ Framework already up-to-date (version $FRAMEWORK_VERSION)"
-        echo "ℹ️  To force reinstall: curl -sSL ... | bash -s -- --force"
-        exit 0
+        echo "✅ Shell integration already up-to-date (version $FRAMEWORK_VERSION)"
+        SHELL_NEEDS_UPDATE=false
     else
-        echo "📦 Updating framework from $INSTALLED_VERSION to $FRAMEWORK_VERSION"
+        echo "📦 Updating shell integration from $INSTALLED_VERSION to $FRAMEWORK_VERSION"
     fi
 else
     if [ "$FORCE_INSTALL" = true ]; then
@@ -38,23 +38,25 @@ else
     fi
 fi
 
-# Backup existing RC file
-cp "$SHELL_RC" "$SHELL_RC.backup.$(date +%Y%m%d_%H%M%S)"
-echo "✅ Created backup of $SHELL_RC"
+# Update shell integration if needed
+if [ "$SHELL_NEEDS_UPDATE" = true ] || [ "$FORCE_INSTALL" = true ]; then
+    # Backup existing RC file
+    cp "$SHELL_RC" "$SHELL_RC.backup.$(date +%Y%m%d_%H%M%S)"
+    echo "✅ Created backup of $SHELL_RC"
 
-# Check if our section already exists
-if grep -q "# Claude Command Shortcuts" "$SHELL_RC"; then
-    # Always auto-update for better user experience - no interactive prompts
-    echo "🔄 Updating existing Claude commands installation..."
-    
-    # Remove existing section
-    # Using a temporary file for compatibility with both Linux and macOS
-    sed '/# Claude Command Shortcuts - START/,/# Claude Command Shortcuts - END/d' "$SHELL_RC" > "$SHELL_RC.tmp"
-    mv "$SHELL_RC.tmp" "$SHELL_RC"
-    echo "✅ Removed old version"
-fi
+    # Check if our section already exists
+    if grep -q "# Claude Command Shortcuts" "$SHELL_RC"; then
+        # Always auto-update for better user experience - no interactive prompts
+        echo "🔄 Updating existing Claude commands installation..."
+        
+        # Remove existing section
+        # Using a temporary file for compatibility with both Linux and macOS
+        sed '/# Claude Command Shortcuts - START/,/# Claude Command Shortcuts - END/d' "$SHELL_RC" > "$SHELL_RC.tmp"
+        mv "$SHELL_RC.tmp" "$SHELL_RC"
+        echo "✅ Removed old version"
+    fi
 
-# Add our commands section
+    # Add our commands section
 cat >> "$SHELL_RC" << 'EOF'
 
 # Claude Command Shortcuts - START
@@ -103,7 +105,15 @@ cchelp() {
 
 EOF
 
-echo "✅ Added Claude command shortcuts to $SHELL_RC"
+    echo "✅ Added Claude command shortcuts to $SHELL_RC"
+    
+    # Save shell integration version  
+    mkdir -p "$(dirname "$VERSION_FILE")"
+    echo "$FRAMEWORK_VERSION" > "$VERSION_FILE"
+    echo "💾 Shell integration version $FRAMEWORK_VERSION"
+else
+    echo "ℹ️  Shell integration already up-to-date"
+fi
 
 # Create commands directory if it doesn't exist
 if [ ! -d "$HOME/.claude/commands" ]; then
@@ -497,7 +507,4 @@ fi
 echo ""
 echo "📖 See CLAUDE.md for complete workflow documentation"
 
-# Save installed version
-mkdir -p "$(dirname "$VERSION_FILE")"
-echo "$FRAMEWORK_VERSION" > "$VERSION_FILE"
-echo "💾 Installed framework version $FRAMEWORK_VERSION"
+# Version already saved in shell integration section
