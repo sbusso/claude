@@ -422,6 +422,15 @@ EXAMPLE
         # Save project framework version
         echo "$FRAMEWORK_VERSION" > "$PROJECT_VERSION_FILE"
         echo "💾 Project framework version $FRAMEWORK_VERSION installed"
+        
+        # Setup project configuration only if project number not configured
+        if [ -f ".claude/utils/get-project-config.sh" ]; then
+            if [ ! -f ".claude/project-config.json" ] || ! jq -e '.project.number' ".claude/project-config.json" >/dev/null 2>&1; then
+                echo ""
+                echo "🔧 Setting up project configuration..."
+                bash ".claude/utils/get-project-config.sh"
+            fi
+        fi
     else
         if [ "$MISSING_FILES" = true ]; then
             echo "✅ Installed missing project files"
@@ -459,24 +468,32 @@ echo ""
 echo "🎉 Installation complete!"
 echo ""
 
-# Show what's available concisely
-if [ -d ".git" ]; then
-    echo "✅ Framework installed: shell commands, project utilities, MCPs"
-else
-    echo "✅ Shell commands installed (project features need git repository)"
-fi
+echo "## Available Commands"
+echo "Shell aliases:"
+echo "  ccf \"description\"  - Create feature with GitHub Projects"
+echo "  cct \"feature\"      - Break down into tasks"
+echo "  cci 123            - Implement issue with TDD workflow"
+echo "  ccc \"message\"      - Create semantic commit"
+echo "  ccpr               - Create pull request"
+echo "  cchelp             - Show command help"
 
-echo ""
-echo "## Quick Start"
-echo "Run: source ~/.zshrc && cchelp"
+if [ -d ".git" ]; then
+    echo ""
+    echo "Claude Code REPL:"
+    echo "  /project:feature \"description\""
+    echo "  /project:tasks \"feature\""
+    echo "  /project:do-issue 123"
+    echo "  /project:commit \"message\""
+    echo "  /project:create-pr"
+fi
 
 if command -v claude >/dev/null 2>&1 && [ -f ".mcp.json" ]; then
     echo ""
     echo "## Available MCPs"
-    echo "Context7, Playwright, GitHub (automatically loaded in Claude Code)"
+    echo "Context7, Playwright, GitHub (auto-loaded in Claude Code)"
 fi
 
 echo ""
-echo "📖 Complete docs: CLAUDE.md"
+echo "Run: source ~/.zshrc
 
 # Version already saved in shell integration section
