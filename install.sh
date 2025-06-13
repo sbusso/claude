@@ -302,10 +302,41 @@ if [ -d ".git" ]; then
         echo "✅ Core workflow commands ready"
         
     else
-        echo "⚠️  Template files not found. Creating basic structure..."
+        echo "🌐 Downloading framework files from GitHub..."
         
-        # Create basic example command
-        cat > ".claude/commands/create-issue.md" << 'EXAMPLE'
+        # Base URL for raw files
+        BASE_URL="https://raw.githubusercontent.com/sbusso/claude-workflow/main"
+        
+        # Download template CLAUDE.md
+        if command -v curl >/dev/null 2>&1; then
+            echo "📄 Downloading CLAUDE.md template..."
+            curl -sSL "$BASE_URL/.claude/templates/CLAUDE.md" -o "CLAUDE.md" 2>/dev/null || {
+                echo "⚠️  Failed to download CLAUDE.md template"
+            }
+            
+            echo "📄 Downloading .mcp.json configuration..."
+            curl -sSL "$BASE_URL/.mcp.json" -o ".mcp.json" 2>/dev/null || {
+                echo "⚠️  Failed to download .mcp.json"
+            }
+            
+            echo "📋 Downloading code guidelines..."
+            mkdir -p ".claude/code-guidelines"
+            curl -sSL "$BASE_URL/.claude/code-guidelines/python.md" -o ".claude/code-guidelines/python.md" 2>/dev/null
+            curl -sSL "$BASE_URL/.claude/code-guidelines/typescript.md" -o ".claude/code-guidelines/typescript.md" 2>/dev/null  
+            curl -sSL "$BASE_URL/.claude/code-guidelines/react.md" -o ".claude/code-guidelines/react.md" 2>/dev/null
+            
+            echo "🔧 Downloading core commands..."
+            curl -sSL "$BASE_URL/.claude/commands/do/do-issue.md" -o ".claude/commands/do-issue.md" 2>/dev/null
+            curl -sSL "$BASE_URL/.claude/commands/do/commit.md" -o ".claude/commands/commit.md" 2>/dev/null
+            curl -sSL "$BASE_URL/.claude/commands/do/create-pr.md" -o ".claude/commands/create-pr.md" 2>/dev/null
+            curl -sSL "$BASE_URL/.claude/commands/plan/feature.md" -o ".claude/commands/feature.md" 2>/dev/null
+            curl -sSL "$BASE_URL/.claude/commands/plan/tasks.md" -o ".claude/commands/tasks.md" 2>/dev/null
+            
+            echo "✅ Downloaded framework files from GitHub"
+        else
+            echo "⚠️  curl not available - creating basic structure"
+            # Create basic example command
+            cat > ".claude/commands/create-issue.md" << 'EXAMPLE'
 Transform the following feature request into a comprehensive GitHub issue: $ARGUMENTS
 
 Create a well-structured issue with:
@@ -318,8 +349,8 @@ Create a well-structured issue with:
 
 Then create the issue using gh CLI.
 EXAMPLE
-        echo "✅ Created example create-issue command"
-        echo "ℹ️  For full framework installation, run this script from the template repository"
+            echo "✅ Created example create-issue command"
+        fi
     fi
     
         # Make utilities executable
