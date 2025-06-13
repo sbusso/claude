@@ -236,16 +236,16 @@ EXAMPLE
 fi
 
 
-echo "Installation complete!"
-echo ""
-
+# Setup project configuration during installation
 if [ -d ".git" ] && [ -f ".claude/utils/get-project-config.sh" ]; then
     if [ ! -f ".claude/project-config.json" ] || ! jq -e '.project.number' ".claude/project-config.json" >/dev/null 2>&1; then
-        echo "To set up GitHub Project integration:"
-        echo "  .claude/utils/get-project-config.sh"
-        echo ""
+        # Run project config with stdin redirected from terminal
+        bash ".claude/utils/get-project-config.sh" < /dev/tty
     fi
 fi
+
+echo "Installation complete!"
+echo ""
 
 echo "## Available Commands"
 echo "Shell aliases:"
