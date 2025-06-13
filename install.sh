@@ -185,10 +185,17 @@ if [ -d ".git" ]; then
         if [ -f "$SCRIPT_DIR/.claude/templates/CLAUDE.md" ]; then
         echo "🚀 Installing from template repository..."
         
-        # Copy utilities first (needed for smart merge)
-        cp -r "$SCRIPT_DIR/.claude/utils/"* ".claude/utils/"
+        # Always download latest utilities to ensure we have the newest versions
+        echo "🔧 Downloading latest workflow utilities..."
+        BASE_URL="https://raw.githubusercontent.com/sbusso/claude-workflow/main"
+        curl -sSL "$BASE_URL/.claude/utils/setup-labels.sh" -o ".claude/utils/setup-labels.sh" 2>/dev/null
+        curl -sSL "$BASE_URL/.claude/utils/get-project-config.sh" -o ".claude/utils/get-project-config.sh" 2>/dev/null
+        curl -sSL "$BASE_URL/.claude/utils/move-item-status.sh" -o ".claude/utils/move-item-status.sh" 2>/dev/null
+        curl -sSL "$BASE_URL/.claude/utils/assign-iteration.sh" -o ".claude/utils/assign-iteration.sh" 2>/dev/null
+        curl -sSL "$BASE_URL/.claude/utils/smart-merge.sh" -o ".claude/utils/smart-merge.sh" 2>/dev/null
+        curl -sSL "$BASE_URL/.claude/utils/merge-mcp.sh" -o ".claude/utils/merge-mcp.sh" 2>/dev/null
         chmod +x .claude/utils/*.sh 2>/dev/null || true
-        echo "✅ Installed workflow automation utilities"
+        echo "✅ Downloaded latest workflow automation utilities"
         
         # Smart merge with existing CLAUDE.md using Claude
         if [ -f "CLAUDE.md" ]; then
