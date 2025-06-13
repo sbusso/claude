@@ -28,7 +28,15 @@ echo "📋 Available projects:"
 gh project list --owner "$OWNER" || exit 1
 
 echo ""
-read -p "Enter project number: " PROJECT_NUMBER
+if [ -t 0 ]; then
+    # Interactive terminal
+    read -p "Enter project number: " PROJECT_NUMBER
+else
+    # Non-interactive - skip setup
+    echo "⚠️  Non-interactive mode detected. Run manually later:"
+    echo "   .claude/utils/get-project-config.sh"
+    exit 0
+fi
 
 if [[ ! "$PROJECT_NUMBER" =~ ^[0-9]+$ ]]; then
     echo "❌ Invalid number"

@@ -210,54 +210,18 @@ if [ -d ".git" ]; then
                 # Backup existing file
                 cp "CLAUDE.md" "CLAUDE.md.backup.$(date +%Y%m%d_%H%M%S)"
                 
-                # Check if Claude Code is available for smart merge
-                if command -v claude >/dev/null 2>&1; then
-                    # Use smart merge utility
-                    echo "🔄 Using Claude smart merge for CLAUDE.md..."
-                    if [ -f ".claude/utils/smart-merge.sh" ]; then
-                        bash ".claude/utils/smart-merge.sh" claude-md "CLAUDE.md" "$SCRIPT_DIR/.claude/templates/CLAUDE.md"
-                        if [ $? -ne 0 ]; then
-                            echo "⚠️  Claude merge failed, using fallback merge"
-                            # Fallback to simple append
-                            {
-                                cat "CLAUDE.md"
-                                echo ""
-                                echo "---"
-                                echo ""
-                                echo "# Claude Code Workflow Framework"
-                                echo ""
-                                cat "$SCRIPT_DIR/.claude/templates/CLAUDE.md"
-                            } > "CLAUDE.md.tmp"
-                            mv "CLAUDE.md.tmp" "CLAUDE.md"
-                        fi
-                    else
-                        echo "⚠️  Smart merge utility not found, using basic merge"
-                        # Fallback to simple append
-                        {
-                            cat "CLAUDE.md"
-                            echo ""
-                            echo "---"
-                            echo ""
-                            echo "# Claude Code Workflow Framework"
-                            echo ""
-                            cat "$SCRIPT_DIR/.claude/templates/CLAUDE.md"
-                        } > "CLAUDE.md.tmp"
-                        mv "CLAUDE.md.tmp" "CLAUDE.md"
-                    fi
-                else
-                    echo "🔄 Claude not available, using basic merge..."
-                    # Simple merge when Claude not available
-                    {
-                        cat "CLAUDE.md"
-                        echo ""
-                        echo "---"
-                        echo ""
-                        echo "# Claude Code Workflow Framework"
-                        echo ""
-                        cat "$SCRIPT_DIR/.claude/templates/CLAUDE.md"
-                    } > "CLAUDE.md.tmp"
-                    mv "CLAUDE.md.tmp" "CLAUDE.md"
-                fi
+                # Use simple merge to avoid hanging on Claude calls during installation
+                echo "🔄 Using simple merge for CLAUDE.md..."
+                {
+                    cat "CLAUDE.md"
+                    echo ""
+                    echo "---"
+                    echo ""
+                    echo "# Claude Code Workflow Framework"
+                    echo ""
+                    cat "$SCRIPT_DIR/.claude/templates/CLAUDE.md"
+                } > "CLAUDE.md.tmp"
+                mv "CLAUDE.md.tmp" "CLAUDE.md"
                 
                 echo "✅ Merged framework workflow into existing CLAUDE.md"
                 echo "📋 Backup saved as CLAUDE.md.backup.*"
