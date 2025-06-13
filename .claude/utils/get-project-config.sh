@@ -16,12 +16,6 @@ if [ -z "$OWNER" ]; then
     exit 1
 fi
 
-# Check if running in non-interactive mode
-if [ ! -t 0 ]; then
-    echo "Non-interactive mode detected. Run manually later:"
-    echo "   .claude/utils/get-project-config.sh"
-    exit 0
-fi
 
 # Show projects
 echo "Available projects:"
