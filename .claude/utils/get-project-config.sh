@@ -22,7 +22,14 @@ echo "Available projects:"
 gh project list --owner "$OWNER" || exit 1
 
 echo
-read -p "Project number: " NUM
+# Force interactive input by reading from terminal directly
+if [ -t 0 ]; then
+    read -p "Project number: " NUM
+else
+    # When stdin is not a terminal (piped from curl), read from terminal directly
+    exec < /dev/tty
+    read -p "Project number: " NUM
+fi
 
 if [[ ! "$NUM" =~ ^[0-9]+$ ]]; then
     echo "Invalid number"
