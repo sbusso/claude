@@ -235,15 +235,17 @@ EXAMPLE
     
 fi
 
-# Setup project configuration if needed (for all installation paths)
-if [ -d ".git" ] && [ -f ".claude/utils/get-project-config.sh" ]; then
-    if [ ! -f ".claude/project-config.json" ] || ! jq -e '.project.number' ".claude/project-config.json" >/dev/null 2>&1; then
-        bash ".claude/utils/get-project-config.sh"
-    fi
-fi
 
 echo "Installation complete!"
 echo ""
+
+if [ -d ".git" ] && [ -f ".claude/utils/get-project-config.sh" ]; then
+    if [ ! -f ".claude/project-config.json" ] || ! jq -e '.project.number' ".claude/project-config.json" >/dev/null 2>&1; then
+        echo "To set up GitHub Project integration:"
+        echo "  .claude/utils/get-project-config.sh"
+        echo ""
+    fi
+fi
 
 echo "## Available Commands"
 echo "Shell aliases:"
