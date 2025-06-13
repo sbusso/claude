@@ -16,8 +16,8 @@ This framework provides a complete development workflow that emphasizes:
 ### One-Liner Installation
 
 ```bash
-# Install directly in your project directory
-curl -sSL https://raw.githubusercontent.com/sbusso/claude-workflow/main/install.sh | bash
+# Install directly in your project directory (always gets latest version)
+curl -sSL https://raw.githubusercontent.com/sbusso/claude-workflow/main/bootstrap.sh | bash
 ```
 
 That's it! The installer will:
