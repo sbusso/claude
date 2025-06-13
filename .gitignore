@@ -1,0 +1,31 @@
+# Local configuration cache
+project-config.json
+
+# MCP runtime files
+.mcp/
+
+# Environment files (for projects using this template)
+.env
+.env.local
+.env.*.local
+
+# Dependencies
+node_modules/
+__pycache__/
+.venv/
+
+# Build outputs
+dist/
+build/
+*.pyc
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+*.log

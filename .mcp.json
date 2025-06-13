@@ -1,0 +1,21 @@
+{
+  "description": "Claude Code Template Framework - MCP Configuration",
+  "version": "1.0.0",
+  "servers": {
+    "context7": {
+      "command": "npx",
+      "args": ["-y", "@upstash/context7-mcp"],
+      "description": "Up-to-date documentation for any library or framework"
+    },
+    "playwright": {
+      "command": "npx",
+      "args": ["@playwright/mcp@latest"],
+      "description": "Browser automation and testing with Playwright"
+    },
+    "github": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-github"],
+      "description": "GitHub repository integration and API access"
+    }
+  }
+}
