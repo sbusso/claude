@@ -454,51 +454,6 @@ else
     echo "  • .mcp.json - MCP server configuration"
 fi
 
-# Setup MCPs for Claude Code if available
-echo ""
-echo "🔌 Setting up Model Context Protocol (MCP) servers..."
-
-# Check if Claude Code is available
-if command -v claude >/dev/null 2>&1; then
-    echo "✅ Claude Code detected"
-    
-    # Check if we're in the template repository
-    if [ -f ".mcp.json" ]; then
-        echo "📋 Found .mcp.json configuration"
-        
-        # Install MCPs from the configuration
-        echo "🚀 Installing framework MCPs..."
-        
-        # Install Context7 for up-to-date documentation
-        if claude mcp add --scope project context7 -- npx -y @upstash/context7-mcp 2>/dev/null; then
-            echo "  ✅ Context7 MCP installed (up-to-date documentation)"
-        else
-            echo "  ⚠️  Context7 MCP installation failed"
-        fi
-        
-        # Install Playwright for browser automation
-        if claude mcp add --scope project playwright -- npx @playwright/mcp@latest 2>/dev/null; then
-            echo "  ✅ Playwright MCP installed (browser automation)"
-        else
-            echo "  ⚠️  Playwright MCP installation failed"
-        fi
-        
-        # Install GitHub MCP if not already configured
-        if claude mcp add --scope project github -- npx -y @modelcontextprotocol/server-github 2>/dev/null; then
-            echo "  ✅ GitHub MCP installed (repository integration)"
-        else
-            echo "  ℹ️  GitHub MCP already configured or installation failed"
-        fi
-        
-        echo "✅ MCP setup complete"
-        echo "ℹ️  MCPs will be available in all projects using this template"
-    else
-        echo "ℹ️  No .mcp.json found - MCPs not configured for this project"
-    fi
-else
-    echo "ℹ️  Claude Code not found - MCP setup skipped"
-    echo "   Install Claude Code first, then re-run this installer for MCP integration"
-fi
 
 echo ""
 echo "🎉 Installation complete!"
