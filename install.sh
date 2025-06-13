@@ -13,7 +13,7 @@ fi
 if command -v git >/dev/null 2>&1 && [ -d ".git" ]; then
     FRAMEWORK_VERSION=$(git rev-parse --short HEAD 2>/dev/null || echo "unknown")
 else
-    FRAMEWORK_VERSION="1725d60"  # Fallback commit hash for curl installs
+    FRAMEWORK_VERSION="bf9738d"  # Fallback commit hash for curl installs
 fi
 
 VERSION_FILE="$HOME/.claude/.framework_version"
