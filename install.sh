@@ -9,47 +9,34 @@ if [[ "$1" == "--force" ]]; then
     FORCE_INSTALL=true
 fi
 
-# Auto-detect framework version dynamically
-if command -v git >/dev/null 2>&1 && [ -d ".git" ]; then
-    # Check if we're in the claude-workflow repository by looking for install.sh
-    if [ -f "install.sh" ] && [ -f ".claude/templates/CLAUDE.md" ]; then
-        FRAMEWORK_VERSION=$(git rev-parse --short HEAD 2>/dev/null || echo "dev")
-    else
-        # We're in a user's repository, fetch latest version from GitHub
-        if command -v curl >/dev/null 2>&1; then
-            FRAMEWORK_VERSION=$(curl -sSL --connect-timeout 5 "https://api.github.com/repos/sbusso/claude-workflow/commits/main" 2>/dev/null | grep -o '"sha":"[^"]*"' | head -1 | cut -d'"' -f4 | cut -c1-7 2>/dev/null || echo "latest")
-        else
-            FRAMEWORK_VERSION="latest"
-        fi
-    fi
+# Set framework version - simplified approach
+if [ -f "install.sh" ] && [ -f ".claude/templates/CLAUDE.md" ]; then
+    # We're in the claude-workflow repository
+    FRAMEWORK_VERSION=$(git rev-parse --short HEAD 2>/dev/null || echo "dev")
 else
-    # No git, fetch latest version from GitHub
-    if command -v curl >/dev/null 2>&1; then
-        FRAMEWORK_VERSION=$(curl -sSL --connect-timeout 5 "https://api.github.com/repos/sbusso/claude-workflow/commits/main" 2>/dev/null | grep -o '"sha":"[^"]*"' | head -1 | cut -d'"' -f4 | cut -c1-7 2>/dev/null || echo "latest")
-    else
-        FRAMEWORK_VERSION="latest"
-    fi
+    # Always use "latest" for user installations to avoid API failures
+    FRAMEWORK_VERSION="latest"
 fi
 
 VERSION_FILE="$HOME/.claude/.framework_version"
 
-echo "🚀 Installing Claude workflow framework..."
+echo "Installing Claude workflow framework..."
 
 # Check shell integration version
 SHELL_NEEDS_UPDATE=true
 if [ -f "$VERSION_FILE" ] && [ "$FORCE_INSTALL" = false ]; then
     INSTALLED_VERSION=$(cat "$VERSION_FILE")
     if [ "$INSTALLED_VERSION" = "$FRAMEWORK_VERSION" ]; then
-        echo "✅ Shell integration already up-to-date (version $FRAMEWORK_VERSION)"
+        echo " Shell integration already up-to-date (version $FRAMEWORK_VERSION)"
         SHELL_NEEDS_UPDATE=false
     else
-        echo "📦 Updating shell integration from $INSTALLED_VERSION to $FRAMEWORK_VERSION"
+        echo " Updating shell integration from $INSTALLED_VERSION to $FRAMEWORK_VERSION"
     fi
 else
     if [ "$FORCE_INSTALL" = true ]; then
-        echo "🔄 Force reinstalling framework version $FRAMEWORK_VERSION"
+        echo " Force reinstalling framework version $FRAMEWORK_VERSION"
     else
-        echo "📦 Installing framework version $FRAMEWORK_VERSION"
+        echo " Installing framework version $FRAMEWORK_VERSION"
     fi
 fi
 
@@ -57,18 +44,18 @@ fi
 if [ "$SHELL_NEEDS_UPDATE" = true ] || [ "$FORCE_INSTALL" = true ]; then
     # Backup existing RC file
     cp "$SHELL_RC" "$SHELL_RC.backup.$(date +%Y%m%d_%H%M%S)"
-    echo "✅ Created backup of $SHELL_RC"
+    echo " Created backup of $SHELL_RC"
 
     # Check if our section already exists
     if grep -q "# Claude Command Shortcuts" "$SHELL_RC"; then
         # Always auto-update for better user experience - no interactive prompts
-        echo "🔄 Updating existing Claude commands installation..."
+        echo " Updating existing Claude commands installation..."
         
         # Remove existing section
         # Using a temporary file for compatibility with both Linux and macOS
         sed '/# Claude Command Shortcuts - START/,/# Claude Command Shortcuts - END/d' "$SHELL_RC" > "$SHELL_RC.tmp"
         mv "$SHELL_RC.tmp" "$SHELL_RC"
-        echo "✅ Removed old version"
+        echo " Removed old version"
     fi
 
     # Add our commands section
@@ -120,22 +107,22 @@ cchelp() {
 
 EOF
 
-    echo "✅ Added Claude command shortcuts to $SHELL_RC"
+    echo " Added Claude command shortcuts to $SHELL_RC"
     
     # Save shell integration version  
     mkdir -p "$(dirname "$VERSION_FILE")"
     echo "$FRAMEWORK_VERSION" > "$VERSION_FILE"
-    echo "💾 Shell integration version $FRAMEWORK_VERSION"
+    echo " Shell integration version $FRAMEWORK_VERSION"
 else
-    echo "ℹ️  Shell integration already up-to-date"
+    echo "  Shell integration already up-to-date"
 fi
 
 # Create commands directory if it doesn't exist
 if [ ! -d "$HOME/.claude/commands" ]; then
     mkdir -p "$HOME/.claude/commands"
-    echo "✅ Created ~/.claude/commands directory for personal commands"
+    echo " Created ~/.claude/commands directory for personal commands"
 else
-    echo "✅ ~/.claude/commands directory already exists"
+    echo " ~/.claude/commands directory already exists"
 fi
 
 # Note: Label setup utility is included in the framework at .claude/utils/setup-labels.sh
@@ -144,25 +131,13 @@ fi
 # Install project template files
 if [ -d ".git" ]; then
     echo ""
-    echo "📁 Git repository detected. Installing Claude Code workflow framework..."
+    echo " Git repository detected. Installing Claude Code workflow framework..."
     
     # Check if project framework is already up-to-date
     PROJECT_VERSION_FILE=".claude/.framework_version"
-    if [ -f "$PROJECT_VERSION_FILE" ]; then
-        PROJECT_INSTALLED_VERSION=$(cat "$PROJECT_VERSION_FILE")
-        if [ "$PROJECT_INSTALLED_VERSION" = "$FRAMEWORK_VERSION" ] && [ "$FORCE_INSTALL" = false ]; then
-            echo "✅ Project framework already up-to-date (version $FRAMEWORK_VERSION)"
-            echo "ℹ️  Use --force flag to reinstall: curl -sSL ... | bash -s -- --force"
-            # Skip installation but still continue to MCP setup
-            SKIP_PROJECT_INSTALL=true
-        else
-            echo "📦 Updating project framework from $PROJECT_INSTALLED_VERSION to $FRAMEWORK_VERSION"
-            SKIP_PROJECT_INSTALL=false
-        fi
-    else
-        echo "📦 Installing project framework version $FRAMEWORK_VERSION"
-        SKIP_PROJECT_INSTALL=false
-    fi
+    # Always install fresh utilities to ensure latest versions
+    SKIP_PROJECT_INSTALL=false
+    echo "Installing project framework..."
     
     # Always check for missing files, regardless of version
     # Create .claude directory structure
@@ -174,7 +149,7 @@ if [ -d ".git" ]; then
     MISSING_FILES=false
     if [ ! -f "CLAUDE.md" ] || [ ! -f ".mcp.json" ] || [ ! -f ".claude/commands/do-issue.md" ] || [ ! -f ".claude/utils/setup-labels.sh" ]; then
         MISSING_FILES=true
-        echo "📦 Detected missing project files, installing..."
+        echo " Detected missing project files, installing..."
     fi
     
     if [ "$SKIP_PROJECT_INSTALL" = false ] || [ "$MISSING_FILES" = true ]; then
@@ -183,10 +158,10 @@ if [ -d ".git" ]; then
         
         # Check if we're running from the template repository
         if [ -f "$SCRIPT_DIR/.claude/templates/CLAUDE.md" ]; then
-        echo "🚀 Installing from template repository..."
+        echo " Installing from template repository..."
         
         # Always download latest utilities to ensure we have the newest versions
-        echo "🔧 Downloading latest workflow utilities..."
+        echo " Downloading latest workflow utilities..."
         BASE_URL="https://raw.githubusercontent.com/sbusso/claude-workflow/main"
         curl -sSL "$BASE_URL/.claude/utils/setup-labels.sh" -o ".claude/utils/setup-labels.sh" 2>/dev/null
         curl -sSL "$BASE_URL/.claude/utils/get-project-config.sh" -o ".claude/utils/get-project-config.sh" 2>/dev/null
@@ -195,23 +170,23 @@ if [ -d ".git" ]; then
         curl -sSL "$BASE_URL/.claude/utils/smart-merge.sh" -o ".claude/utils/smart-merge.sh" 2>/dev/null
         curl -sSL "$BASE_URL/.claude/utils/merge-mcp.sh" -o ".claude/utils/merge-mcp.sh" 2>/dev/null
         chmod +x .claude/utils/*.sh 2>/dev/null || true
-        echo "✅ Downloaded latest workflow automation utilities"
+        echo " Downloaded latest workflow automation utilities"
         
         # Smart merge with existing CLAUDE.md using Claude
         if [ -f "CLAUDE.md" ]; then
-            echo "📄 Analyzing existing CLAUDE.md for smart merge..."
+            echo " Analyzing existing CLAUDE.md for smart merge..."
             
             # Check if it already contains framework sections
             if grep -q "## Development Workflow" "CLAUDE.md" && grep -q "## Smart Testing Philosophy" "CLAUDE.md"; then
-                echo "✅ CLAUDE.md already contains framework workflow - skipping"
+                echo " CLAUDE.md already contains framework workflow - skipping"
             else
-                echo "🤖 Using Claude for intelligent CLAUDE.md merge..."
+                echo "Merging CLAUDE.md..."
                 
                 # Backup existing file
                 cp "CLAUDE.md" "CLAUDE.md.backup.$(date +%Y%m%d_%H%M%S)"
                 
                 # Use simple merge to avoid hanging on Claude calls during installation
-                echo "🔄 Using simple merge for CLAUDE.md..."
+                echo " Using simple merge for CLAUDE.md..."
                 {
                     cat "CLAUDE.md"
                     echo ""
@@ -223,42 +198,42 @@ if [ -d ".git" ]; then
                 } > "CLAUDE.md.tmp"
                 mv "CLAUDE.md.tmp" "CLAUDE.md"
                 
-                echo "✅ Merged framework workflow into existing CLAUDE.md"
-                echo "📋 Backup saved as CLAUDE.md.backup.*"
+                echo " Merged framework workflow into existing CLAUDE.md"
+                echo " Backup saved as CLAUDE.md.backup.*"
             fi
         else
             cp "$SCRIPT_DIR/.claude/templates/CLAUDE.md" "CLAUDE.md"
-            echo "✅ Created project CLAUDE.md with workflow framework"
+            echo " Created project CLAUDE.md with workflow framework"
         fi
         
         # Copy code guidelines  
         cp -r "$SCRIPT_DIR/.claude/code-guidelines/"* ".claude/code-guidelines/"
-        echo "✅ Installed code quality guidelines"
+        echo " Installed code quality guidelines"
         
         # Smart merge MCP configuration using dedicated JSON merge
         if [ -f "$SCRIPT_DIR/.mcp.json" ]; then
             if [ -f ".mcp.json" ]; then
-                echo "📄 Merging existing .mcp.json with framework MCPs..."
+                echo " Merging existing .mcp.json with framework MCPs..."
                 
                 # Use dedicated JSON merge utility
                 if [ -f ".claude/utils/merge-mcp.sh" ]; then
                     bash ".claude/utils/merge-mcp.sh" ".mcp.json" "$SCRIPT_DIR/.mcp.json"
                 else
-                    echo "⚠️  MCP merge utility not found, using fallback method"
+                    echo "  MCP merge utility not found, using fallback method"
                     
                     # Fallback: check if framework MCPs already exist
                     if grep -q "context7\|playwright\|github" ".mcp.json"; then
-                        echo "✅ .mcp.json already contains framework MCPs - skipping"
+                        echo " .mcp.json already contains framework MCPs - skipping"
                     else
-                        echo "📋 Manual merge required for .mcp.json"
-                        echo "📋 Framework MCPs available in $SCRIPT_DIR/.mcp.json"
+                        echo " Manual merge required for .mcp.json"
+                        echo " Framework MCPs available in $SCRIPT_DIR/.mcp.json"
                         cp ".mcp.json" ".mcp.json.backup.$(date +%Y%m%d_%H%M%S)"
-                        echo "📋 Your existing .mcp.json backed up as .mcp.json.backup.*"
+                        echo " Your existing .mcp.json backed up as .mcp.json.backup.*"
                     fi
                 fi
             else
                 cp "$SCRIPT_DIR/.mcp.json" ".mcp.json"
-                echo "✅ Installed MCP server configuration"
+                echo " Installed MCP server configuration"
             fi
         fi
         
@@ -278,45 +253,45 @@ if [ -d ".git" ]; then
                 if ! diff -q "$SCRIPT_DIR/.claude/commands/$cmd" ".claude/commands/$cmd_name" >/dev/null 2>&1; then
                     cp ".claude/commands/$cmd_name" ".claude/commands/$cmd_name.backup.$(date +%Y%m%d_%H%M%S)"
                     cp "$SCRIPT_DIR/.claude/commands/$cmd" ".claude/commands/$cmd_name"
-                    echo "📝 Updated $cmd_name (backup saved)"
+                    echo "Updated $cmd_name (backup saved)"
                 fi
             else
                 # Create directory structure if needed
                 mkdir -p ".claude/commands/$(dirname "$cmd")" 2>/dev/null || mkdir -p ".claude/commands"
                 cp "$SCRIPT_DIR/.claude/commands/$cmd" ".claude/commands/$cmd_name"
-                echo "📝 Installed $cmd_name"
+                echo "Installed $cmd_name"
             fi
         done
-        echo "✅ Core workflow commands ready"
+        echo " Core workflow commands ready"
         
     else
-        echo "🌐 Downloading framework files from GitHub..."
+        echo "Downloading framework files from GitHub..."
         
         # Base URL for raw files
         BASE_URL="https://raw.githubusercontent.com/sbusso/claude-workflow/main"
         
         # Download template CLAUDE.md
         if command -v curl >/dev/null 2>&1; then
-            echo "📄 Downloading CLAUDE.md template..."
+            echo " Downloading CLAUDE.md template..."
             curl -sSL "$BASE_URL/.claude/templates/CLAUDE.md" -o "CLAUDE.md" 2>/dev/null || {
-                echo "⚠️  Failed to download CLAUDE.md template"
+                echo "  Failed to download CLAUDE.md template"
             }
             
-            echo "📄 Downloading .mcp.json configuration..."
+            echo " Downloading .mcp.json configuration..."
             # Download to temp file first for potential merging
             TEMP_MCP=$(mktemp)
             curl -sSL "$BASE_URL/.mcp.json" -o "$TEMP_MCP" 2>/dev/null || {
-                echo "⚠️  Failed to download .mcp.json"
+                echo "  Failed to download .mcp.json"
                 rm -f "$TEMP_MCP"
             }
             
-            echo "📋 Downloading code guidelines..."
+            echo " Downloading code guidelines..."
             mkdir -p ".claude/code-guidelines"
             curl -sSL "$BASE_URL/.claude/code-guidelines/python.md" -o ".claude/code-guidelines/python.md" 2>/dev/null
             curl -sSL "$BASE_URL/.claude/code-guidelines/typescript.md" -o ".claude/code-guidelines/typescript.md" 2>/dev/null  
             curl -sSL "$BASE_URL/.claude/code-guidelines/react.md" -o ".claude/code-guidelines/react.md" 2>/dev/null
             
-            echo "🔧 Downloading workflow utilities..."
+            echo " Downloading workflow utilities..."
             curl -sSL "$BASE_URL/.claude/utils/setup-labels.sh" -o ".claude/utils/setup-labels.sh" 2>/dev/null
             curl -sSL "$BASE_URL/.claude/utils/get-project-config.sh" -o ".claude/utils/get-project-config.sh" 2>/dev/null
             curl -sSL "$BASE_URL/.claude/utils/move-item-status.sh" -o ".claude/utils/move-item-status.sh" 2>/dev/null
@@ -324,51 +299,51 @@ if [ -d ".git" ]; then
             curl -sSL "$BASE_URL/.claude/utils/smart-merge.sh" -o ".claude/utils/smart-merge.sh" 2>/dev/null
             curl -sSL "$BASE_URL/.claude/utils/merge-mcp.sh" -o ".claude/utils/merge-mcp.sh" 2>/dev/null
             chmod +x .claude/utils/*.sh 2>/dev/null || true
-            echo "✅ Downloaded workflow automation utilities"
+            echo " Downloaded workflow automation utilities"
             
             # Now handle MCP configuration merge
             if [ -f "$TEMP_MCP" ]; then
                 if [ -f ".mcp.json" ]; then
-                    echo "📄 Merging existing .mcp.json with framework MCPs..."
+                    echo " Merging existing .mcp.json with framework MCPs..."
                     
                     # Use the JSON merge utility we just downloaded
                     if [ -f ".claude/utils/merge-mcp.sh" ]; then
                         bash ".claude/utils/merge-mcp.sh" ".mcp.json" "$TEMP_MCP"
                     else
-                        echo "⚠️  MCP merge utility not found, using simple merge"
+                        echo "  MCP merge utility not found, using simple merge"
                         
                         # Simple fallback merge using jq if available
                         if command -v jq >/dev/null 2>&1; then
-                            echo "🔄 Using jq for JSON merge..."
+                            echo " Using jq for JSON merge..."
                             BACKUP_MCP=".mcp.json.backup.$(date +%Y%m%d_%H%M%S)"
                             cp ".mcp.json" "$BACKUP_MCP"
                             
                             jq -s '.[0] * .[1]' ".mcp.json" "$TEMP_MCP" > ".mcp.json.tmp" && \
                                 mv ".mcp.json.tmp" ".mcp.json" && \
-                                echo "✅ Merged MCP configurations" || \
-                                echo "⚠️  JSON merge failed, using framework version"
+                                echo " Merged MCP configurations" || \
+                                echo "  JSON merge failed, using framework version"
                         else
-                            echo "📋 jq not available, using framework .mcp.json as-is"
+                            echo " jq not available, using framework .mcp.json as-is"
                             cp "$TEMP_MCP" ".mcp.json"
                         fi
                     fi
                 else
                     cp "$TEMP_MCP" ".mcp.json"
-                    echo "✅ Installed MCP server configuration"
+                    echo " Installed MCP server configuration"
                 fi
                 rm -f "$TEMP_MCP"
             fi
             
-            echo "🔧 Downloading core commands..."
+            echo " Downloading core commands..."
             curl -sSL "$BASE_URL/.claude/commands/do/do-issue.md" -o ".claude/commands/do-issue.md" 2>/dev/null
             curl -sSL "$BASE_URL/.claude/commands/do/commit.md" -o ".claude/commands/commit.md" 2>/dev/null
             curl -sSL "$BASE_URL/.claude/commands/do/create-pr.md" -o ".claude/commands/create-pr.md" 2>/dev/null
             curl -sSL "$BASE_URL/.claude/commands/plan/feature.md" -o ".claude/commands/feature.md" 2>/dev/null
             curl -sSL "$BASE_URL/.claude/commands/plan/tasks.md" -o ".claude/commands/tasks.md" 2>/dev/null
             
-            echo "✅ Downloaded framework files from GitHub"
+            echo " Downloaded framework files from GitHub"
         else
-            echo "⚠️  curl not available - creating basic structure"
+            echo "  curl not available - creating basic structure"
             # Create basic example command
             cat > ".claude/commands/create-issue.md" << 'EXAMPLE'
 Transform the following feature request into a comprehensive GitHub issue: $ARGUMENTS
@@ -383,7 +358,7 @@ Create a well-structured issue with:
 
 Then create the issue using gh CLI.
 EXAMPLE
-            echo "✅ Created example create-issue command"
+            echo " Created example create-issue command"
         fi
     fi
     
@@ -392,19 +367,19 @@ EXAMPLE
         
         # Save project framework version
         echo "$FRAMEWORK_VERSION" > "$PROJECT_VERSION_FILE"
-        echo "💾 Project framework version $FRAMEWORK_VERSION installed"
+        echo " Project framework version $FRAMEWORK_VERSION installed"
         
     else
         if [ "$MISSING_FILES" = true ]; then
-            echo "✅ Installed missing project files"
+            echo " Installed missing project files"
         else
-            echo "ℹ️  All project files already present and up to date"
+            echo "  All project files already present and up to date"
         fi
     fi
     
 else
     echo ""
-    echo "⚠️  No git repository detected in current directory"
+    echo "  No git repository detected in current directory"
     echo ""
     echo "The shell integration has been installed, but project framework files"
     echo "require a git repository. To get the complete installation:"
@@ -431,13 +406,13 @@ fi
 if [ -d ".git" ] && [ -f ".claude/utils/get-project-config.sh" ]; then
     if [ ! -f ".claude/project-config.json" ] || ! jq -e '.project.number' ".claude/project-config.json" >/dev/null 2>&1; then
         echo ""
-        echo "🔧 Setting up project configuration..."
+        echo " Setting up project configuration..."
         bash ".claude/utils/get-project-config.sh"
     fi
 fi
 
 echo ""
-echo "🎉 Installation complete!"
+echo " Installation complete!"
 echo ""
 
 echo "## Available Commands"
