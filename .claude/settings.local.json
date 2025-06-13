@@ -23,7 +23,9 @@
       "Bash(cat:*)",
       "WebFetch(domain:github.com)",
       "Bash(touch:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(gh release create:*)",
+      "Bash(gh release view:*)"
     ],
     "deny": []
   }
