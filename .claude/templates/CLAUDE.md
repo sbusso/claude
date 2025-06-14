@@ -36,9 +36,9 @@ This project uses a streamlined GitHub Projects workflow with Claude Code automa
 - **Documentation**: Comment complex logic, document breaking changes
 
 ### Framework Guidelines
-- **Python**: FastAPI, Pydantic, 300-line limit (see `.claude/code-guidelines/python.md`)
-- **TypeScript**: TanStack Router, shadcn/ui (see `.claude/code-guidelines/typescript.md`) 
-- **React**: React 19, Server Components, modern patterns (see `.claude/code-guidelines/react.md`)
+- **Python**: FastAPI, Pydantic, 300-line limit (see `.claude/contexts/python.md`)
+- **TypeScript**: TanStack Router, shadcn/ui (see `.claude/contexts/typescript.md`) 
+- **React**: React 19, Server Components, modern patterns (see `.claude/contexts/react.md`)
 
 ## Smart Testing Philosophy
 
@@ -191,5 +191,5 @@ ccb "better search experience"           # brainstorm
 
 - **Command help**: Use `@` followed by command name for usage
 - **Workflow issues**: Check `.claude/utils/` scripts and GitHub Project setup
-- **Code standards**: Refer to `.claude/code-guidelines/` for language-specific guidance
+- **Code standards**: Refer to `.claude/contexts/` for language-specific guidance
 - **MCP usage**: Add `use [mcp-name]` to prompts for enhanced capabilities

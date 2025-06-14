@@ -11,7 +11,7 @@ This repository contains the shared Claude Code workspace that synchronizes acro
 │   ├── plan/         # Planning commands
 │   ├── job/          # Analysis commands
 │   └── setup/        # Setup commands
-├── code-guidelines/   # Language-specific coding standards
+├── contexts/          # Language-specific coding standards and contexts
 ├── memory/           # Persistent context and guidelines
 ├── templates/        # Project template files
 ├── utils/            # Utility scripts for GitHub Projects

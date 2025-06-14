@@ -45,6 +45,7 @@ your-project/
 ├── CLAUDE.md                    # Imports @.claude/memory/workflow.md
 ├── .claude/                     # Git repo synced with dotclaude
 │   ├── commands/               # Planning & implementation commands
+│   ├── contexts/               # Language-specific coding standards
 │   ├── memory/                 # Workflow context and guidelines
 │   ├── settings.json           # MCP config & permissions (shared)
 │   ├── settings.local.json     # Your personal overrides (ignored)
@@ -117,6 +118,7 @@ Add your project instructions here.
 **Framework Memory (synced):**
 - `.claude/memory/workflow.md` - Core workflow commands and aliases
 - `.claude/memory/project-setup.md` - Package manager guidelines
+- `.claude/contexts/` - Language-specific coding standards (Python, TypeScript, React)
 - Additional memory files for specific contexts
 
 ## Settings & MCP

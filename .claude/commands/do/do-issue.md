@@ -90,9 +90,9 @@ cd ../$(basename $(pwd))-issue-$ARGUMENTS
 ### 3.1 Reference Code Guidelines
 
 Follow project standards:
-- **Python**: `.claude/code-guidelines/python.md` (uv, FastAPI, 300-line limit)
-- **TypeScript**: `.claude/code-guidelines/typescript.md` (bun, TanStack Router, shadcn/ui)
-- **React**: `.claude/code-guidelines/react.md` (React 19, Server Components)
+- **Python**: `.claude/contexts/python.md` (uv, FastAPI, 300-line limit)
+- **TypeScript**: `.claude/contexts/typescript.md` (bun, TanStack Router, shadcn/ui)
+- **React**: `.claude/contexts/react.md` (React 19, Server Components)
 
 ### 3.2 Test What Matters
 
@@ -280,7 +280,7 @@ gh pr edit --add-label "ready-for-review"
 - Use `.claude/utils/` scripts for GitHub Projects status tracking throughout
 
 **Code Guidelines Integration**
-- Always reference `.claude/code-guidelines/` before implementation
+- Always reference `.claude/contexts/` before implementation
 - Follow language-specific best practices
 - Maintain consistency with existing codebase
 

@@ -32,7 +32,7 @@ This repository is the **source of truth** for Claude Code productivity tools th
 │   ├── move-item-status.sh      # Move items between project statuses
 │   ├── assign-iteration.sh      # Assign items to project iterations
 │   └── setup-labels.sh          # Create required workflow labels
-├── code-guidelines/       # Language-specific coding standards
+├── contexts/             # Language-specific coding standards and contexts
 │   ├── python.md         # Python development guidelines (uv, FastAPI)
 │   ├── typescript.md     # TypeScript development guidelines (bun, TanStack)
 │   └── react.md          # React + TypeScript guidelines (2025 best practices)
@@ -76,15 +76,15 @@ install.sh                # Shell integration installer with MCP setup
 - Test update scenarios with existing installations
 - Verify all command aliases work correctly after installation
 
-## Code Guidelines Management
+## Context Management
 
-### Updating Guidelines
-- Keep guidelines current with latest best practices
+### Updating Contexts
+- Keep contexts current with latest best practices
 - Maintain consistency between language-specific guides
 - Update package management recommendations (uv for Python, bun for Node.js)
 - Ensure 300-line file limit is consistently enforced
 
-### Adding New Language Guidelines
+### Adding New Language Contexts
 - Follow existing structure and format
 - Include package management, project setup, and best practices
 - Provide clear examples and command references
