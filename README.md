@@ -1,308 +1,244 @@
 # Claude Code Workflow Framework
 
-A lean, practical development workflow framework for Claude Code with GitHub Projects integration and smart testing approach.
+A synchronized workspace installer for Claude Code that provides consistent development workflows across all your projects.
 
 ## Overview
 
-This framework provides a complete development workflow that emphasizes:
-- **Move fast, test smart, keep it simple**
-- **GitHub Projects integration** for automated planning and tracking
-- **Smart test-first development** that tests what matters
-- **Lean TDD approach** without over-engineering
-- **Automated workflow utilities** for common tasks
+This installer sets up a **synchronized Claude Code workspace** that:
+- **Syncs across all projects** - One workspace, shared everywhere
+- **Pure memory + settings approach** - No file copying, just git sync
+- **Native Claude Code integration** - Uses built-in memory and settings systems
+- **Two-way synchronization** - Share improvements back to the framework
+
+## Architecture
+
+### Two Repository System
+1. **claude-workflow** (this repo) - Installer script only
+2. **[dotclaude](https://github.com/sbusso/dotclaude)** - Shared workspace that syncs to `.claude/`
+
+### How It Works
+- `.claude/` in each project is a git repository synced with dotclaude
+- Project `CLAUDE.md` imports framework memory: `@.claude/memory/workflow.md`
+- MCP configuration lives in `.claude/settings.json` (shared)
+- Local overrides use `*.local.*` files (ignored by git)
 
 ## Quick Install
 
 ### One-Liner Installation
 
 ```bash
-# Install directly in your project directory (always gets latest version)
-curl -sSL https://raw.githubusercontent.com/sbusso/claude-workflow/main/bootstrap.sh | bash
+curl -sSL https://raw.githubusercontent.com/sbusso/claude-workflow/main/install.sh | bash
 ```
 
-That's it! The installer will:
-- Set up shell integration with command aliases
-- Install the complete workflow framework in your project
-- Configure MCPs (Context7, Playwright, GitHub)
-- Track installation version to avoid redundant installs
-- Provide setup instructions for GitHub Projects
+The installer will:
+- Install shell integration with command aliases
+- Clone the dotclaude workspace to `.claude/`
+- Create minimal project `CLAUDE.md` with workflow import
+- Set up MCP integration (Context7, Playwright, GitHub)
+- Configure proper gitignore for local files
 
-**Smart Installation Features**:
-- **Version Tracking**: Skips installation if already up-to-date
-- **Claude-Powered Merging**: Uses Claude's intelligence for semantic file merging
-- **Intelligent Conflict Resolution**: Preserves project-specific content while adding framework features
-- **Backup Protection**: Creates timestamped backups before modifications
-- **Fallback Safety**: Basic merge when Claude not available
-- **Force Reinstall**: `rm ~/.claude/.framework_version && curl -sSL ... | bash`
+### What Gets Created
 
-### Alternative: Manual Installation
-
-```bash
-# Clone this repository first
-git clone https://github.com/sbusso/claude-workflow.git
-cd claude-workflow
-
-# Then run installer in your target project
-cd /path/to/your/project
-/path/to/claude-workflow/install.sh
+**In your project:**
 ```
-
-## What Gets Installed
-
-✅ **Project CLAUDE.md** - Workflow documentation for your project  
-✅ **Core Commands** - Planning and implementation workflows (@feature, @tasks, @do-issue)  
-✅ **Automation Utilities** - GitHub Projects status management and label setup  
-✅ **Code Guidelines** - Python, TypeScript, and React 2025 best practices  
-✅ **MCP Integration** - Context7, Playwright, and GitHub servers  
-✅ **Shell Aliases** - Quick command shortcuts (cci, cfi, etc.)
-
-## Quick Start After Installation
-
-After running the one-liner installer, follow these steps:
-
-### 1. Activate Shell Integration
-```bash
-source ~/.zshrc
-cchelp  # See all available commands
-```
-
-### 2. Set Up GitHub Projects (One-Time)
-```bash
-# Grant GitHub CLI project permissions
-gh auth refresh -s project --hostname github.com
-
-# Create workflow labels in your repository
-.claude/utils/setup-labels.sh
-```
-
-### 3. Configure GitHub Project
-In your GitHub Project, ensure you have:
-- **Status field**: Todo, In Progress, Done
-- **Iteration field**: For sprint planning
-- **Automations enabled**: Auto-close issues when PR merged
-
-### 4. Start Using the Workflow
-```bash
-# In Claude Code REPL
-/project:feature "add user authentication system"
-/project:tasks "User Authentication System"
-/project:do-issue 123
-/project:commit "implement login endpoint"
-/project:create-pr
-
-# Using shell aliases
-ccf "add user authentication system"    # create feature
-cct "User Authentication System"       # create tasks  
-cci 123                                # implement issue
-ccc "implement login endpoint"         # create commit
-ccpr                                   # create PR
+your-project/
+├── CLAUDE.md                    # Imports @.claude/memory/workflow.md
+├── .claude/                     # Git repo synced with dotclaude
+│   ├── commands/               # Planning & implementation commands
+│   ├── memory/                 # Workflow context and guidelines
+│   ├── settings.json           # MCP config & permissions (shared)
+│   ├── settings.local.json     # Your personal overrides (ignored)
+│   ├── utils/                  # GitHub Projects automation
+│   └── templates/              # Project templates
+└── .claude-config.json          # Project-specific configuration
 ```
 
 ## Core Workflow
 
-### 1. Planning Phase
-- **/project:feature** - Create features with extended thinking analysis
-- **/project:tasks** - Break features into implementable tasks with iteration assignment
+### Planning Commands
+- `/project:feature "description"` - Create feature issues with analysis
+- `/project:breakdown 123` - Break features into implementation tasks  
+- `/project:implement "tech task"` - Direct technical implementation planning
+- `/project:brainstorm "problem"` - Critical thinking problem exploration
 
-### 2. Implementation Phase  
-- **/project:do-issue** - Smart test-first development with lean TDD
-- **/project:commit** - Semantic commits with proper formatting
-- **/project:create-pr** - Standardized pull request creation
+### Implementation Commands  
+- `/project:do-issue 123` - Smart test-first development
+- `/project:commit "message"` - Semantic commits
+- `/project:create-pr` - Standardized pull requests
 
-### 3. Automated Management
-- **GitHub Projects status tracking** (Todo → In Progress → Done)
-- **Automatic issue closure** when PRs merge
-- **Iteration assignment** for sprint planning
-
-## Smart Testing Philosophy
-
-**Test what matters, skip what doesn't.**
-
-### Test These:
-- Core business logic and API contracts
-- Critical user flows (login, checkout, etc.)
-- Bug reproductions before fixing
-- Main happy path + one error case
-
-### Skip These:
-- Trivial getters/setters
-- Framework/library code
-- One-off scripts  
-- Pure UI styling
-
-### Lean TDD Cycle:
-1. Write minimal test for core functionality
-2. Commit failing test
-3. Make it pass with simplest code
-4. Commit working code
-5. Refactor only if needed
-
-## Code Quality Standards
-
-- **300-line file limit** - Keep components focused
-- **uv for Python, bun for Node.js** - Modern package management
-- **TypeScript strict mode** - Catch errors early
-- **Smart documentation** - Comment complex logic, document breaking changes
-
-## Command Usage
-
-### Two Ways to Run Commands
-
-**1. Claude Code REPL (Recommended)**
-```bash
-# Direct project commands
-/project:feature "description"
-/project:do-issue 123
-```
-
-**2. Shell Aliases (After Installation)**
-```bash
-# Generic command runner  
-ccmd feature "description"
-ccmd do-issue 123
-
-# Or use aliases
-ccf "description"  # feature
-cci 123           # do-issue
-```
-
-## Available Tools
-
-### Shell Commands
+### Shell Aliases
 ```bash
 ccf "feature description"    # Create feature
-cct "feature name"           # Create tasks  
-cci 123                      # Implement issue
-ccfi 123                     # Fix issue
-ccc "commit message"         # Create commit
-ccpr                         # Create PR
-ccb "brainstorm topic"       # Brainstorm ideas
-ccw                          # Create worktrees
+ccbd 123                    # Break down feature  
+ccim "add CORS support"     # Implement technical task
+cci 123                     # Implement issue
+ccc "commit message"        # Create commit
+ccpr                        # Create PR
+ccb "problem"               # Brainstorm
+ccsync                      # Pull workspace updates
+ccpush                      # Push workspace improvements
 ```
 
-### Workflow Utilities
+## Workspace Synchronization
+
+### Pull Updates
 ```bash
-.claude/utils/setup-labels.sh              # Create GitHub labels
-.claude/utils/move-item-status.sh 123 done # Manage status
-.claude/utils/assign-iteration.sh 123 current # Assign iteration
+ccsync                      # Shell alias
+# or
+cd .claude && git pull origin main
 ```
 
-### MCPs (Model Context Protocol)
-- **Context7**: `use context7` for up-to-date documentation
-- **Playwright**: Browser automation and testing
-- **GitHub**: Enhanced repository integration
-
-## GitHub Projects Setup
-
-### Required Project Fields:
-- **Status**: Todo, In Progress, Done
-- **Iteration**: Current and future iterations
-
-### Required Automations:
-- ✅ Auto-set status to "Done" when PR merged
-- ✅ Auto-close issues when status = "Done"  
-- ✅ Auto-set status to "Todo" when items added
-
-### Labels Created:
-`feature`, `backlog`, `task`, `planned`, `in-progress`, `ready-for-review`, `research`, `design`
-
-## Framework Structure
-
-```
-your-project/
-├── CLAUDE.md                    # Project workflow documentation
-├── .mcp.json                    # MCP server configuration
-└── .claude/
-    ├── commands/                # Workflow commands (@feature, @tasks, @do-issue)
-    ├── utils/                   # GitHub Projects automation scripts
-    ├── code-guidelines/         # Python, TypeScript, React standards
-    └── project-config.json      # Auto-discovered GitHub config
+### Push Improvements  
+```bash
+ccpush                      # Shell alias
+# or  
+cd .claude && git add . && git commit -m "improve: description" && git push
 ```
 
-## Philosophy
+### Framework Updates
+When the dotclaude repository is updated:
+1. All projects can `ccsync` to get latest commands/guidelines
+2. New memory files and utilities automatically available
+3. MCP configuration stays current across projects
+
+## Memory System
+
+Claude Code automatically loads memory files:
+
+**Project Memory (tracked):**
+```markdown
+# CLAUDE.md
+@.claude/memory/workflow.md
+
+## Project-Specific Context
+Add your project instructions here.
+```
+
+**Framework Memory (synced):**
+- `.claude/memory/workflow.md` - Core workflow commands and aliases
+- `.claude/memory/project-setup.md` - Package manager guidelines
+- Additional memory files for specific contexts
+
+## Settings & MCP
+
+**Shared Configuration (`.claude/settings.json`):**
+- MCP server definitions
+- Shared permissions
+- Framework defaults
+
+**Local Overrides (`.claude/settings.local.json`):**
+- Personal preferences
+- Environment-specific settings
+- Authentication tokens
+
+Example MCP setup:
+```json
+{
+  "mcpServers": {
+    "context7": {
+      "command": "npx",
+      "args": ["-y", "@context7/mcp"]
+    },
+    "github": {
+      "command": "npx", 
+      "args": ["-y", "@modelcontextprotocol/server-github"],
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": ""
+      }
+    }
+  }
+}
+```
+
+## Development Philosophy
 
 **Move fast, test smart, keep it simple.**
 
-This framework is designed for teams who want to:
-- Ship features quickly without sacrificing quality
-- Use automation to handle repetitive tasks
-- Focus testing effort on what actually matters
-- Maintain clean, readable code without over-engineering
-- Integrate naturally with GitHub's project management tools
+- **Test what matters** - Core business logic and critical user flows
+- **Skip trivial tests** - Getters, framework code, styling
+- **300-line file limit** - Keep components focused
+- **Modern tooling** - uv for Python, bun for Node.js
+- **Smart automation** - Let GitHub Projects handle tracking
+
+## GitHub Projects Integration
+
+### Setup (One-Time)
+```bash
+# Grant GitHub CLI project permissions
+gh auth refresh -s project --hostname github.com
+
+# Create workflow labels
+.claude/utils/setup-labels.sh
+
+# Configure project integration
+.claude/utils/get-project-config.sh
+```
+
+### Required Project Fields
+- **Status**: Todo, In Progress, Done  
+- **Iteration**: For sprint planning
+
+### Automation Utilities
+```bash
+.claude/utils/move-item-status.sh 123 done
+.claude/utils/assign-iteration.sh 123 current
+```
+
+## Contributing to Framework
+
+To improve the shared workspace:
+
+1. **Make changes** in any project's `.claude/` directory
+2. **Test locally** with your workflow
+3. **Push improvements**:
+   ```bash
+   cd .claude
+   git add .
+   git commit -m "improve: description of changes"
+   git push origin main
+   ```
+4. **Changes sync** to other projects on next `ccsync`
 
 ## Troubleshooting
 
 ### Installation Issues
-
-**"Command not found" after installation:**
 ```bash
-source ~/.zshrc  # Reload shell configuration
+# Reload shell after install
+source ~/.zshrc
+
+# Force reinstall
+rm -rf .claude && ./install.sh --force
+
+# Check workspace sync
+cd .claude && git status
 ```
 
-**"Permission denied" on utilities:**
+### Workspace Sync Issues
 ```bash
-chmod +x .claude/utils/*.sh  # Make scripts executable
+# Reset workspace
+rm -rf .claude
+git clone https://github.com/sbusso/dotclaude.git .claude
+
+# Fix sync conflicts
+cd .claude && git stash && git pull && git stash pop
 ```
 
-**"Missing project scope" error:**
+### Missing Commands
 ```bash
-gh auth refresh -s project --hostname github.com  # Grant project permissions
+# Check memory loading
+/memory
+
+# Verify command files exist
+ls .claude/commands/*/
+
+# Restart Claude Code to reload memory
 ```
 
-### GitHub Projects Issues
+## Repositories
 
-**"Label not found" errors:**
-```bash
-.claude/utils/setup-labels.sh  # Create required labels
-```
-
-**"Project not found":**
-- Check project exists: `gh project list`
-- Verify repository connection to project
-- Run `.claude/utils/get-project-config.sh` to refresh config
-
-### MCP Issues
-
-**MCPs not working:**
-- Ensure Claude Code is installed
-- Check `.mcp.json` exists in project
-- Try: `claude mcp list` to see installed servers
-
-### Smart Merge Issues
-
-**Claude merge failed:**
-- Installation falls back to basic append merge
-- Check backup files (`*.backup.*`) for original content
-- Manually refine using: `/project:smart-merge CLAUDE.md CLAUDE.md.backup.* CLAUDE.md`
-- Or use utility: `.claude/utils/smart-merge.sh claude-md CLAUDE.md framework.md`
-
-**Merge quality concerns:**
-- Use manual `/project:smart-merge` command for better control
-- Or run utility script: `.claude/utils/smart-merge.sh`
-- Review merged content and adjust as needed
-- Framework preserves your project-specific content
-- Use backup files to restore if unsatisfied with merge
-
-**MCP configuration conflicts:**
-- Claude intelligently merges JSON configurations
-- Check `.mcp.json.backup.*` for your original configuration
-- Framework adds: context7, playwright, github servers
-- Manual merge available if automatic merge fails
-
-## Contributing
-
-Found a bug or want to improve the framework? 
-
-1. Create an issue describing the problem
-2. Fork and create a feature branch
-3. Test your changes with the actual workflow
-4. Submit a PR with clear description
-
-## Repository
-
-**GitHub**: https://github.com/sbusso/claude-workflow  
-**Issues**: https://github.com/sbusso/claude-workflow/issues  
-**Releases**: https://github.com/sbusso/claude-workflow/releases
+- **Installer**: https://github.com/sbusso/claude-workflow
+- **Workspace**: https://github.com/sbusso/dotclaude
+- **Issues**: https://github.com/sbusso/claude-workflow/issues
 
 ## License
 

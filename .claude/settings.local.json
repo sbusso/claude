@@ -1,37 +1,7 @@
 {
   "permissions": {
     "allow": [
-      "WebFetch(domain:docs.anthropic.com)",
-      "WebFetch(domain:docs.github.com)",
-      "Bash(gh:*)",
-      "Bash(git:*)",
-      "Bash(jq:*)",
-      "Bash(.claude/utils/*)",
-      "Bash(./.claude/utils/*)",
-      "Bash(echo:*)",
-      "Bash(cat:*)",
-      "Bash(grep:*)",
-      "Bash(find:*)",
-      "Bash(ls:*)",
-      "Bash(mkdir:*)",
-      "Bash(rm:*)",
-      "Bash(chmod:*)",
-      "Bash(wc:*)",
-      "Bash(awk:*)",
-      "Bash(sed:*)",
-      "Bash(if:*)",
-      "Bash(cat:*)",
-      "WebFetch(domain:github.com)",
-      "Bash(touch:*)",
-      "Bash(git add:*)",
-      "Bash(gh release create:*)",
-      "Bash(gh release view:*)",
-      "Bash(git rev-parse:*)",
-      "Bash(git remote set-url:*)",
-      "Bash(git init:*)",
-      "Bash(bash:*)",
-      "Bash(git commit:*)",
-      "Bash(mv:*)"
+      "Bash(git pull:*)"
     ],
     "deny": []
   }

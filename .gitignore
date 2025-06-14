@@ -1,6 +1,13 @@
 # Local configuration cache
 project-config.json
 
+# Project-specific Claude Code files
+*.local.*
+claude.local.json
+.claude/settings.local.json
+.claude/project-config.json
+.claude/.framework_version
+
 # MCP runtime files
 .mcp/
 

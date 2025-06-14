@@ -1,0 +1,22 @@
+# Project-specific files that should not be in the shared workspace
+settings.local.json
+project-config.json
+.framework_version
+
+# Local overrides (using Claude Code's *.local.* pattern)
+*.local.*
+
+# OS and editor files
+.DS_Store
+*.swp
+*.swo
+*~
+
+# Temporary files
+*.tmp
+*.bak
+
+# Local development files
+node_modules/
+.env
+.env.local

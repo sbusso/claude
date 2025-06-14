@@ -1,47 +1,50 @@
 #!/bin/zsh
-# install-claude-commands.sh
+# Claude Code Workspace Installer
+# Installs and synchronizes .claude workspace across projects
+
+set -e
 
 SHELL_RC="$HOME/.zshrc"
+DOTCLAUDE_REPO="https://github.com/sbusso/dotclaude.git"
+
+# Colors for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
+
+# Logging functions
+log_info() { echo -e "${BLUE}[INFO]${NC} $1"; }
+log_success() { echo -e "${GREEN}[SUCCESS]${NC} $1"; }
+log_warning() { echo -e "${YELLOW}[WARNING]${NC} $1"; }
+log_error() { echo -e "${RED}[ERROR]${NC} $1"; }
 
 # Check for force flag
 FORCE_INSTALL=false
 if [[ "$1" == "--force" ]]; then
     FORCE_INSTALL=true
+    log_info "Force installation enabled"
 fi
 
-# Set framework version - simplified approach
-if [ -f "install.sh" ] && [ -f ".claude/templates/CLAUDE.md" ]; then
-    # We're in the claude-workflow repository
-    FRAMEWORK_VERSION=$(git rev-parse --short HEAD 2>/dev/null || echo "dev")
-else
-    # Always use "latest" for user installations to avoid API failures
-    FRAMEWORK_VERSION="latest"
-fi
-
-VERSION_FILE="$HOME/.claude/.framework_version"
-
-# Check shell integration version
-SHELL_NEEDS_UPDATE=true
-if [ -f "$VERSION_FILE" ] && [ "$FORCE_INSTALL" = false ]; then
-    INSTALLED_VERSION=$(cat "$VERSION_FILE")
-    if [ "$INSTALLED_VERSION" = "$FRAMEWORK_VERSION" ]; then
-        SHELL_NEEDS_UPDATE=false
-    fi
-fi
-
-# Update shell integration if needed
-if [ "$SHELL_NEEDS_UPDATE" = true ] || [ "$FORCE_INSTALL" = true ]; then
+# Function to install shell integration
+install_shell_integration() {
+    log_info "Installing shell integration..."
+    
     # Backup existing RC file
-    cp "$SHELL_RC" "$SHELL_RC.backup.$(date +%Y%m%d_%H%M%S)" 2>/dev/null
+    if [ -f "$SHELL_RC" ]; then
+        cp "$SHELL_RC" "$SHELL_RC.backup.$(date +%Y%m%d_%H%M%S)" 2>/dev/null
+        log_info "Backed up existing shell configuration"
+    fi
 
-    # Check if our section already exists
-    if grep -q "# Claude Command Shortcuts" "$SHELL_RC"; then
-        # Remove existing section
+    # Remove existing section if present
+    if grep -q "# Claude Command Shortcuts" "$SHELL_RC" 2>/dev/null; then
         sed '/# Claude Command Shortcuts - START/,/# Claude Command Shortcuts - END/d' "$SHELL_RC" > "$SHELL_RC.tmp"
         mv "$SHELL_RC.tmp" "$SHELL_RC"
+        log_info "Removed existing Claude shortcuts"
     fi
 
-    # Add our commands section
+    # Add new shell integration
 cat >> "$SHELL_RC" << 'EOF'
 
 # Claude Command Shortcuts - START
@@ -49,8 +52,8 @@ cat >> "$SHELL_RC" << 'EOF'
 ccmd() {
     if [ $# -lt 1 ]; then
         echo "Usage: ccmd <command-name> <arguments>"
-        echo "Example: ccmd create-issue \"add dark mode support\""
-        echo "Example: ccmd fix-issue \"123\""
+        echo "Example: ccmd feature \"add dark mode support\""
+        echo "Example: ccmd breakdown 123"
         return 1
     fi
     
@@ -70,21 +73,48 @@ alias ccpr='ccmd create-pr'        # Create pull requests
 alias ccw='ccmd create-worktrees'  # Create git worktrees
 alias ccb='ccmd brainstorm'        # Brainstorm with extended thinking
 
+# Workspace sync commands
+ccsync() {
+    if [ -d ".claude/.git" ]; then
+        log_info "Syncing Claude workspace..."
+        (cd .claude && git pull origin main)
+        log_success "Workspace synced"
+    else
+        log_error "No Claude workspace found. Run installer first."
+    fi
+}
+
+ccpush() {
+    if [ -d ".claude/.git" ]; then
+        log_info "Pushing Claude workspace changes..."
+        (cd .claude && git add . && git commit -m "update: workspace improvements" && git push origin main)
+        log_success "Workspace changes pushed"
+    else
+        log_error "No Claude workspace found. Run installer first."
+    fi
+}
+
 # Help function to list all commands
 cchelp() {
     echo "Claude Command Shortcuts:"
     echo "  ccmd <command> <args>  - Run any project command"
     echo ""
-    echo "Available aliases:"
+    echo "Planning Commands:"
     echo "  ccf \"description\"    - Create feature with GitHub Projects"
     echo "  ccbd 123              - Break feature into tasks"
     echo "  ccim \"tech task\"     - Direct technical implementation planning"
+    echo "  ccb \"topic\"          - Brainstorm with extended thinking"
+    echo ""
+    echo "Implementation Commands:"
     echo "  cci 123               - Implement issue with TDD workflow"
     echo "  ccfi 123              - Fix specific issue"
     echo "  ccc \"message\"        - Create semantic commit"
     echo "  ccpr                  - Create pull request"
     echo "  ccw                   - Create git worktrees"
-    echo "  ccb \"topic\"          - Brainstorm with extended thinking"
+    echo ""
+    echo "Workspace Management:"
+    echo "  ccsync                - Pull latest workspace updates"
+    echo "  ccpush                - Push workspace improvements"
     echo ""
     echo "Run 'ccmd' without arguments for usage"
 }
@@ -92,208 +122,170 @@ cchelp() {
 
 EOF
 
-    # Save shell integration version  
-    mkdir -p "$(dirname "$VERSION_FILE")"
-    echo "$FRAMEWORK_VERSION" > "$VERSION_FILE"
-fi
+    log_success "Shell integration installed"
+}
 
-# Create commands directory if it doesn't exist
-mkdir -p "$HOME/.claude/commands" 2>/dev/null
+# Function to setup or sync .claude workspace
+setup_claude_workspace() {
+    log_info "Setting up Claude workspace..."
 
-# Install project template files
-if [ -d ".git" ]; then
-    # Create .claude directory structure
-    mkdir -p ".claude/utils" ".claude/commands" ".claude/code-guidelines" ".claude/memory"
-    
-    # Check what's missing
-    MISSING_FILES=false
-    if [ ! -f "CLAUDE.md" ] || [ ! -f ".mcp.json" ] || [ ! -f ".claude/commands/do-issue.md" ] || [ ! -f ".claude/utils/setup-labels.sh" ]; then
-        MISSING_FILES=true
+    # Check if we're in the claude-workflow installer repository
+    if [ -f "install.sh" ] && [ -f "bootstrap.sh" ] && [ -f ".claude/templates/CLAUDE.md" ]; then
+        log_info "Detected claude-workflow installer repository - skipping .claude setup"
+        log_info "In installer environment, .claude should be managed manually"
+        return 0
     fi
-    
-    if [ "$MISSING_FILES" = true ]; then
-        # Get the script directory (where install.sh is located)
-        SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+    if [ -d ".claude" ]; then
+        if [ -d ".claude/.git" ]; then
+            log_info "Found existing Claude workspace, syncing..."
+            (cd .claude && git pull origin main)
+            log_success "Workspace synced"
+        else
+            if [ "$FORCE_INSTALL" = true ]; then
+                log_warning "Removing existing .claude folder for fresh install"
+                rm -rf .claude
+                setup_fresh_workspace
+            else
+                log_error "Existing .claude folder found without git. Use --force to reinstall."
+                exit 1
+            fi
+        fi
+    else
+        setup_fresh_workspace
+    fi
+}
+
+# Function to setup fresh workspace
+setup_fresh_workspace() {
+    log_info "Cloning Claude workspace from $DOTCLAUDE_REPO"
+    git clone "$DOTCLAUDE_REPO" .claude
+    log_success "Claude workspace cloned"
+}
+
+# Function to setup project configuration
+setup_project_config() {
+    log_info "Setting up project configuration..."
+
+    # Setup CLAUDE.md (project memory) if it doesn't exist
+    if [ ! -f "CLAUDE.md" ]; then
+        log_info "Creating project CLAUDE.md with workflow import..."
         
-        # Check if we're running from the template repository
-        if [ -f "$SCRIPT_DIR/.claude/templates/CLAUDE.md" ]; then
+cat > "CLAUDE.md" << 'EOF'
+# Project Context
+
+This project uses the Claude Code workflow framework.
+
+@.claude/memory/workflow.md
+
+## Project-Specific Context
+
+Add project-specific instructions here.
+EOF
+        log_success "Project CLAUDE.md created with workflow import"
+    else
+        log_info "Project CLAUDE.md already exists"
+    fi
+
+    # Setup .gitignore entries
+    setup_gitignore
+}
+
+# Function to setup gitignore
+setup_gitignore() {
+    local gitignore_entries="
+# Claude Code project-specific files
+*.local.*
+.claude/settings.local.json
+.claude/project-config.json
+.claude/.framework_version
+"
+
+    if [ -f ".gitignore" ]; then
+        if ! grep -q "*.local.*" .gitignore; then
+            log_info "Adding Claude Code entries to .gitignore"
+            echo "$gitignore_entries" >> .gitignore
+        fi
+    else
+        log_info "Creating .gitignore with Claude Code entries"
+        echo "$gitignore_entries" > .gitignore
+    fi
+}
+
+# Function to setup GitHub Projects integration
+setup_github_projects() {
+    if [ -d ".git" ] && command -v gh >/dev/null 2>&1; then
+        log_info "Setting up GitHub Projects integration..."
         
-            # Download latest utilities
-        BASE_URL="https://raw.githubusercontent.com/sbusso/claude-workflow/main"
-        curl -sSL "$BASE_URL/.claude/utils/setup-labels.sh" -o ".claude/utils/setup-labels.sh" 2>/dev/null
-        curl -sSL "$BASE_URL/.claude/utils/get-project-config.sh" -o ".claude/utils/get-project-config.sh" 2>/dev/null
-        curl -sSL "$BASE_URL/.claude/utils/move-item-status.sh" -o ".claude/utils/move-item-status.sh" 2>/dev/null
-        curl -sSL "$BASE_URL/.claude/utils/assign-iteration.sh" -o ".claude/utils/assign-iteration.sh" 2>/dev/null
-        curl -sSL "$BASE_URL/.claude/utils/smart-merge.sh" -o ".claude/utils/smart-merge.sh" 2>/dev/null
-        curl -sSL "$BASE_URL/.claude/utils/merge-mcp.sh" -o ".claude/utils/merge-mcp.sh" 2>/dev/null
+        # Make utilities executable
         chmod +x .claude/utils/*.sh 2>/dev/null || true
         
-        # Handle CLAUDE.md
-        if [ -f "CLAUDE.md" ]; then
-            if ! grep -q "## Development Workflow" "CLAUDE.md"; then
-                cp "CLAUDE.md" "CLAUDE.md.backup.$(date +%Y%m%d_%H%M%S)" 2>/dev/null
-                {
-                    cat "CLAUDE.md"
-                    echo ""
-                    echo "---"
-                    echo ""
-                    echo "# Claude Code Workflow Framework"
-                    echo ""
-                    cat "$SCRIPT_DIR/.claude/templates/CLAUDE.md"
-                } > "CLAUDE.md.tmp"
-                mv "CLAUDE.md.tmp" "CLAUDE.md"
-            fi
-        else
-            cp "$SCRIPT_DIR/.claude/templates/CLAUDE.md" "CLAUDE.md"
+        # Run project config setup if needed
+        if [ ! -f ".claude/project-config.json" ] || ! jq -e '.project.number' ".claude/project-config.json" >/dev/null 2>&1; then
+            log_info "Configuring GitHub Projects integration..."
+            bash ".claude/utils/get-project-config.sh" < /dev/tty || log_warning "GitHub Projects setup skipped"
         fi
         
-        # Copy code guidelines  
-        cp -r "$SCRIPT_DIR/.claude/code-guidelines/"* ".claude/code-guidelines/" 2>/dev/null
+        log_success "GitHub Projects integration ready"
+    else
+        log_warning "GitHub CLI not found or not a git repository - skipping GitHub Projects setup"
+    fi
+}
+
+# Main installation flow
+main() {
+    log_info "Claude Code Workspace Installer"
+    log_info "==============================="
+    
+    # Install shell integration first (works globally)
+    install_shell_integration
+    
+    # Only setup workspace if we're in a project directory
+    if [ -d ".git" ]; then
+        log_info "Detected git repository, setting up project workspace..."
+        setup_claude_workspace
+        setup_project_config
+        setup_github_projects
         
-        # Copy memory folder (project setup guidelines)
-        if [ "$FORCE_INSTALL" = true ] || [ ! -f ".claude/memory/project-setup.md" ]; then
-            cp -r "$SCRIPT_DIR/.claude/memory/"* ".claude/memory/" 2>/dev/null || true
-        fi
-        
-        # Handle MCP configuration - NO BACKUP SPAM
-        if [ -f "$SCRIPT_DIR/.mcp.json" ]; then
-            if [ ! -f ".mcp.json" ]; then
-                cp "$SCRIPT_DIR/.mcp.json" ".mcp.json"
-            fi
-        fi
-        
-        # Copy essential commands with proper directory structure
-        COMMANDS=("do/do-issue.md" "do/commit.md" "do/create-pr.md" "plan/feature.md" "plan/breakdown.md" "plan/brainstorm.md" "plan/implement.md" "job/analyst.md")
-        
-        for cmd in "${COMMANDS[@]}"; do
-            target_path=".claude/commands/$cmd"
-            if [ ! -f "$target_path" ] || ! diff -q "$SCRIPT_DIR/.claude/commands/$cmd" "$target_path" >/dev/null 2>&1; then
-                # Backup existing file if different
-                if [ -f "$target_path" ]; then
-                    cp "$target_path" "$target_path.backup.$(date +%Y%m%d_%H%M%S)" 2>/dev/null || true
-                fi
-                # Create directory structure and copy
-                mkdir -p ".claude/commands/$(dirname "$cmd")" 2>/dev/null
-                cp "$SCRIPT_DIR/.claude/commands/$cmd" "$target_path"
-            fi
-        done
-        
-        fi
+        log_success "Installation complete!"
+        echo ""
+        log_info "Available Commands:"
+        echo "  Planning: ccf, ccbd, ccim, ccb"
+        echo "  Implementation: cci, ccfi, ccc, ccpr"
+        echo "  Workspace: ccsync, ccpush"
+        echo "  Help: cchelp"
+        echo ""
+        log_info "Run: source ~/.zshrc (or restart terminal)"
+        echo ""
+        log_info "Claude Code REPL commands:"
+        echo "  /project:feature \"description\""
+        echo "  /project:breakdown 123"
+        echo "  /project:implement \"tech task\""
+        echo "  /project:do-issue 123"
         
     else
-        # Base URL for raw files
-        BASE_URL="https://raw.githubusercontent.com/sbusso/claude-workflow/main"
-        
-        # Download files
-        if command -v curl >/dev/null 2>&1; then
-            curl -sSL "$BASE_URL/.claude/templates/CLAUDE.md" -o "CLAUDE.md" 2>/dev/null
-            
-            # Download to temp file first for potential merging
-            TEMP_MCP=$(mktemp)
-            curl -sSL "$BASE_URL/.mcp.json" -o "$TEMP_MCP" 2>/dev/null || {
-                rm -f "$TEMP_MCP"
-            }
-            
-            mkdir -p ".claude/code-guidelines"
-            curl -sSL "$BASE_URL/.claude/code-guidelines/python.md" -o ".claude/code-guidelines/python.md" 2>/dev/null
-            curl -sSL "$BASE_URL/.claude/code-guidelines/typescript.md" -o ".claude/code-guidelines/typescript.md" 2>/dev/null  
-            curl -sSL "$BASE_URL/.claude/code-guidelines/react.md" -o ".claude/code-guidelines/react.md" 2>/dev/null
-            
-            # Download memory folder (project setup guidelines)
-            if [ "$FORCE_INSTALL" = true ] || [ ! -f ".claude/memory/project-setup.md" ]; then
-                curl -sSL "$BASE_URL/.claude/memory/project-setup.md" -o ".claude/memory/project-setup.md" 2>/dev/null
-            fi
-            
-            curl -sSL "$BASE_URL/.claude/utils/setup-labels.sh" -o ".claude/utils/setup-labels.sh" 2>/dev/null
-            curl -sSL "$BASE_URL/.claude/utils/get-project-config.sh" -o ".claude/utils/get-project-config.sh" 2>/dev/null
-            curl -sSL "$BASE_URL/.claude/utils/move-item-status.sh" -o ".claude/utils/move-item-status.sh" 2>/dev/null
-            curl -sSL "$BASE_URL/.claude/utils/assign-iteration.sh" -o ".claude/utils/assign-iteration.sh" 2>/dev/null
-            curl -sSL "$BASE_URL/.claude/utils/smart-merge.sh" -o ".claude/utils/smart-merge.sh" 2>/dev/null
-            curl -sSL "$BASE_URL/.claude/utils/merge-mcp.sh" -o ".claude/utils/merge-mcp.sh" 2>/dev/null
-            chmod +x .claude/utils/*.sh 2>/dev/null || true
-            
-            # Handle MCP configuration - NO BACKUP SPAM
-            if [ -f "$TEMP_MCP" ]; then
-                if [ ! -f ".mcp.json" ]; then
-                    cp "$TEMP_MCP" ".mcp.json"
-                fi
-                rm -f "$TEMP_MCP"
-            fi
-            
-            # Download commands with proper directory structure
-            mkdir -p ".claude/commands/do" ".claude/commands/plan" ".claude/commands/job"
-            curl -sSL "$BASE_URL/.claude/commands/do/do-issue.md" -o ".claude/commands/do/do-issue.md" 2>/dev/null
-            curl -sSL "$BASE_URL/.claude/commands/do/commit.md" -o ".claude/commands/do/commit.md" 2>/dev/null
-            curl -sSL "$BASE_URL/.claude/commands/do/create-pr.md" -o ".claude/commands/do/create-pr.md" 2>/dev/null
-            curl -sSL "$BASE_URL/.claude/commands/plan/feature.md" -o ".claude/commands/plan/feature.md" 2>/dev/null
-            curl -sSL "$BASE_URL/.claude/commands/plan/breakdown.md" -o ".claude/commands/plan/breakdown.md" 2>/dev/null
-            curl -sSL "$BASE_URL/.claude/commands/plan/brainstorm.md" -o ".claude/commands/plan/brainstorm.md" 2>/dev/null
-            curl -sSL "$BASE_URL/.claude/commands/plan/implement.md" -o ".claude/commands/plan/implement.md" 2>/dev/null
-            curl -sSL "$BASE_URL/.claude/commands/job/analyst.md" -o ".claude/commands/job/analyst.md" 2>/dev/null
-        else
-            # Create basic example command
-            cat > ".claude/commands/create-issue.md" << 'EXAMPLE'
-Transform the following feature request into a comprehensive GitHub issue: $ARGUMENTS
+        log_success "Shell integration installed!"
+        echo ""
+        log_info "To setup a project workspace:"
+        echo "  1. Navigate to a git repository"
+        echo "  2. Run the installer again"
+        echo ""
+        log_info "Run: source ~/.zshrc (or restart terminal)"
+    fi
+}
 
-Create a well-structured issue with:
-- Clear title (action verb + specific feature)
-- User story (As a..., I want..., so that...)
-- Acceptance criteria (Given-When-Then format)
-- Technical requirements
-- Implementation plan
-- Testing strategy
-
-Then create the issue using gh CLI.
-EXAMPLE
-        fi
+# Check for required tools
+check_requirements() {
+    if ! command -v git >/dev/null 2>&1; then
+        log_error "Git is required but not installed"
+        exit 1
     fi
     
-    # Make utilities executable
-    chmod +x .claude/utils/*.sh 2>/dev/null || true
-    
-    # Save project framework version
-    echo "$FRAMEWORK_VERSION" > ".claude/.framework_version" 2>/dev/null
-    
-fi
-
-
-# Setup project configuration during installation
-if [ -d ".git" ] && [ -f ".claude/utils/get-project-config.sh" ]; then
-    if [ ! -f ".claude/project-config.json" ] || ! jq -e '.project.number' ".claude/project-config.json" >/dev/null 2>&1; then
-        # Run project config with stdin redirected from terminal
-        bash ".claude/utils/get-project-config.sh" < /dev/tty
+    if ! command -v jq >/dev/null 2>&1; then
+        log_warning "jq not found - some features may not work properly"
     fi
-fi
+}
 
-echo "Installation complete!"
-echo ""
-
-echo "## Available Commands"
-echo "Shell aliases:"
-echo "  ccf \"description\"  - Create feature with GitHub Projects"
-echo "  ccbd 123           - Break feature into tasks"
-echo "  ccim \"tech task\"   - Direct technical implementation planning"
-echo "  cci 123            - Implement issue with TDD workflow"
-echo "  ccc \"message\"      - Create semantic commit"
-echo "  ccpr               - Create pull request"
-echo "  cchelp             - Show command help"
-
-if [ -d ".git" ]; then
-    echo ""
-    echo "Claude Code REPL:"
-    echo "  /project:feature \"description\""
-    echo "  /project:breakdown 123"
-    echo "  /project:implement \"tech task\""
-    echo "  /project:do-issue 123"
-    echo "  /project:commit \"message\""
-    echo "  /project:create-pr"
-fi
-
-if command -v claude >/dev/null 2>&1 && [ -f ".mcp.json" ]; then
-    echo ""
-    echo "## Available MCPs"
-    echo "Context7, Playwright, GitHub (auto-loaded in Claude Code)"
-fi
-
-echo ""
-echo "Run: source ~/.zshrc"
+# Run the installer
+check_requirements
+main

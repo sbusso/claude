@@ -4,7 +4,7 @@
 
 set -e
 
-echo "Claude Workflow Framework Bootstrap"
+echo "Claude Code Workspace Installer Bootstrap"
 echo "Fetching latest installer..."
 
 # Generate timestamp for cache busting
