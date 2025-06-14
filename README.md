@@ -147,6 +147,14 @@ Example MCP setup:
       "env": {
         "GITHUB_PERSONAL_ACCESS_TOKEN": ""
       }
+    },
+    "zen": {
+      "command": "npx",
+      "args": ["-y", "zen-mcp-server"],
+      "env": {
+        "OPENROUTER_API_KEY": "",
+        "GEMINI_API_KEY": ""
+      }
     }
   }
 }
