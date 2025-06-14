@@ -1,24 +1,32 @@
 {
-  "name": "claude-workflow-framework",
-  "version": "0.1.0",
-  "description": "A lean, practical development workflow framework for Claude Code with GitHub Projects integration",
+  "name": "claude-code-workspace-installer",
+  "version": "2.0.0",
+  "description": "Synchronized workspace installer for Claude Code that provides consistent development workflows across all projects",
   "repository": {
     "type": "git",
     "url": "https://github.com/sbusso/claude-workflow.git"
   },
   "keywords": [
     "claude-code",
+    "workspace",
+    "synchronization",
     "workflow",
     "github-projects",
-    "tdd",
-    "development",
-    "automation"
+    "memory",
+    "mcp",
+    "dotclaude"
   ],
   "author": "Claude Code Framework Contributors",
   "license": "MIT",
   "homepage": "https://github.com/sbusso/claude-workflow#readme",
   "scripts": {
     "install": "./install.sh",
-    "setup": ".claude/utils/setup-labels.sh"
+    "bootstrap": "./bootstrap.sh"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "bin": {
+    "claude-workspace": "./install.sh"
   }
 }
