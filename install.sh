@@ -61,7 +61,8 @@ ccmd() {
 
 # Common aliases for available commands
 alias ccf='ccmd feature'           # Create features with GitHub Projects
-alias cct='ccmd tasks'             # Break features into tasks
+alias ccbd='ccmd breakdown'        # Break features into tasks
+alias ccim='ccmd implement'        # Direct technical implementation planning
 alias cci='ccmd do-issue'          # Implement issue with TDD workflow
 alias ccfi='ccmd fix-issue'        # Fix a specific issue
 alias ccc='ccmd commit'            # Create semantic commits
@@ -76,7 +77,8 @@ cchelp() {
     echo ""
     echo "Available aliases:"
     echo "  ccf \"description\"    - Create feature with GitHub Projects"
-    echo "  cct \"feature\"        - Break feature into tasks"
+    echo "  ccbd 123              - Break feature into tasks"
+    echo "  ccim \"tech task\"     - Direct technical implementation planning"
     echo "  cci 123               - Implement issue with TDD workflow"
     echo "  ccfi 123              - Fix specific issue"
     echo "  ccc \"message\"        - Create semantic commit"
@@ -161,7 +163,7 @@ if [ -d ".git" ]; then
         fi
         
         # Copy essential commands with proper directory structure
-        COMMANDS=("do/do-issue.md" "do/commit.md" "do/create-pr.md" "plan/feature.md" "plan/tasks.md")
+        COMMANDS=("do/do-issue.md" "do/commit.md" "do/create-pr.md" "plan/feature.md" "plan/breakdown.md" "plan/brainstorm.md" "plan/implement.md" "job/analyst.md")
         
         for cmd in "${COMMANDS[@]}"; do
             target_path=".claude/commands/$cmd"
@@ -219,12 +221,15 @@ if [ -d ".git" ]; then
             fi
             
             # Download commands with proper directory structure
-            mkdir -p ".claude/commands/do" ".claude/commands/plan"
+            mkdir -p ".claude/commands/do" ".claude/commands/plan" ".claude/commands/job"
             curl -sSL "$BASE_URL/.claude/commands/do/do-issue.md" -o ".claude/commands/do/do-issue.md" 2>/dev/null
             curl -sSL "$BASE_URL/.claude/commands/do/commit.md" -o ".claude/commands/do/commit.md" 2>/dev/null
             curl -sSL "$BASE_URL/.claude/commands/do/create-pr.md" -o ".claude/commands/do/create-pr.md" 2>/dev/null
             curl -sSL "$BASE_URL/.claude/commands/plan/feature.md" -o ".claude/commands/plan/feature.md" 2>/dev/null
-            curl -sSL "$BASE_URL/.claude/commands/plan/tasks.md" -o ".claude/commands/plan/tasks.md" 2>/dev/null
+            curl -sSL "$BASE_URL/.claude/commands/plan/breakdown.md" -o ".claude/commands/plan/breakdown.md" 2>/dev/null
+            curl -sSL "$BASE_URL/.claude/commands/plan/brainstorm.md" -o ".claude/commands/plan/brainstorm.md" 2>/dev/null
+            curl -sSL "$BASE_URL/.claude/commands/plan/implement.md" -o ".claude/commands/plan/implement.md" 2>/dev/null
+            curl -sSL "$BASE_URL/.claude/commands/job/analyst.md" -o ".claude/commands/job/analyst.md" 2>/dev/null
         else
             # Create basic example command
             cat > ".claude/commands/create-issue.md" << 'EXAMPLE'
@@ -266,7 +271,8 @@ echo ""
 echo "## Available Commands"
 echo "Shell aliases:"
 echo "  ccf \"description\"  - Create feature with GitHub Projects"
-echo "  cct \"feature\"      - Break down into tasks"
+echo "  ccbd 123           - Break feature into tasks"
+echo "  ccim \"tech task\"   - Direct technical implementation planning"
 echo "  cci 123            - Implement issue with TDD workflow"
 echo "  ccc \"message\"      - Create semantic commit"
 echo "  ccpr               - Create pull request"
@@ -276,7 +282,8 @@ if [ -d ".git" ]; then
     echo ""
     echo "Claude Code REPL:"
     echo "  /project:feature \"description\""
-    echo "  /project:tasks \"feature\""
+    echo "  /project:breakdown 123"
+    echo "  /project:implement \"tech task\""
     echo "  /project:do-issue 123"
     echo "  /project:commit \"message\""
     echo "  /project:create-pr"

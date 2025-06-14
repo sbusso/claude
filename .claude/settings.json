@@ -1,7 +1,7 @@
 {
   "allowedTools": {
     "Edit": true,
-    "Bash": ["bun", "npm", "node", "ls", "cat", "git*", "find", "grep", "cd", "mkdir", "touch", "rm", "cp", "mv", "echo", "pwd", "test", "head", "tail", "less", "more", "nano", "wc", "sort", "uniq", "cut", "sed", "awk", "curl", "wget", "diff", "patch", "tar", "zip", "unzip", "jq", "npm run*"],
+    "Bash": ["bun", "npm", "node", "ls", "cat", "git*", "find", "grep", "cd", "mkdir", "touch", "rm", "cp", "mv", "echo", "pwd", "test", "head", "tail", "less", "more", "nano", "wc", "sort", "uniq", "cut", "sed", "awk", "curl", "wget", "diff", "patch", "tar", "zip", "unzip", "jq", "npm run*", "curl"],
     "Fetch": true,
     "mcp__modelcontextprotocol-server-github__server-github": true
   },

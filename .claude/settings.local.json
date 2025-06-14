@@ -28,7 +28,10 @@
       "Bash(gh release view:*)",
       "Bash(git rev-parse:*)",
       "Bash(git remote set-url:*)",
-      "Bash(git init:*)"
+      "Bash(git init:*)",
+      "Bash(bash:*)",
+      "Bash(git commit:*)",
+      "Bash(mv:*)"
     ],
     "deny": []
   }

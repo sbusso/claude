@@ -7,8 +7,10 @@ This file provides guidance to Claude Code when working with this project.
 This project uses a streamlined GitHub Projects workflow with Claude Code automation:
 
 ### Planning Phase
-- **/project:feature** - Create features with extended thinking analysis
-- **/project:tasks** - Break features into implementable tasks with iteration assignment
+- **/project:feature** - Create feature GitHub issues with extended thinking analysis
+- **/project:breakdown** - Break features into implementable tasks assigned to current iteration
+- **/project:implement** - Direct technical implementation planning (skips feature analysis)
+- **/project:brainstorm** - Critical thinking brainstorming for problem exploration
 
 ### Implementation Phase  
 - **/project:do-issue** - Smart test-first development with lean TDD approach
@@ -125,27 +127,27 @@ The framework auto-discovers your GitHub Project:
 
 ### Quick Start Commands
 ```bash
-# In Claude Code REPL - Plan a new feature
-/project:feature "add user authentication system"
+# Planning workflows
+/project:feature "add user authentication system"           # Complex features
+/project:implement "add CORS support to API"                # Direct technical tasks
+/project:brainstorm "users need better search"              # Problem exploration
 
-# Break down feature into tasks  
-/project:tasks "User Authentication System from issue #123"
+# Break down planned feature into tasks
+/project:breakdown 123                                      # Feature issue #123
 
-# Implement a task
-/project:do-issue 124
-
-# Create semantic commit
-/project:commit "implement user login endpoint"
-
-# Create pull request
-/project:create-pr
+# Implementation workflow
+/project:do-issue 124                                       # Implement task #124
+/project:commit "implement user login endpoint"             # Semantic commit
+/project:create-pr                                          # Create pull request
 
 # Using shell aliases (after install.sh)
 ccf "add user authentication system"     # feature
-cct "User Authentication System"         # tasks  
+ccbd 123                                 # breakdown
+ccim "add CORS support to API"           # implement
 cci 124                                  # do-issue
 ccc "implement user login endpoint"      # commit
 ccpr                                     # create-pr
+ccb "better search experience"           # brainstorm
 ```
 
 ### Project Management
