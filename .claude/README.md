@@ -1,63 +1,80 @@
-# Claude Code Workspace
+# Claude Code GitHub Workflow Framework
 
-This repository contains the shared Claude Code workspace that synchronizes across all your projects.
+This repository contains AI instruction templates for intelligent GitHub Issues-based development workflows.
 
 ## Structure
 
 ```
 .claude/
-├── commands/          # Claude Code command definitions
-│   ├── do/           # Implementation commands
-│   ├── plan/         # Planning commands
-│   ├── job/          # Analysis commands
-│   └── setup/        # Setup commands
+├── commands/          # AI instruction templates (enhanced prompts)
+│   ├── do/           # Implementation instruction templates
+│   ├── plan/         # Planning instruction templates
+│   └── project/      # Context analysis instruction templates
 ├── contexts/          # Language-specific coding standards and contexts
-├── memory/           # Persistent context and guidelines
-├── templates/        # Project template files
-├── utils/            # Utility scripts for GitHub Projects
-└── settings.json     # Global Claude Code settings
+├── settings.json     # Claude Code settings with GitHub MCP
+├── .mcp.json         # MCP server configuration
+└── CLAUDE.md         # Project guidance file (automatically loaded by Claude Code)
 ```
 
 ## Usage
 
-This workspace is automatically synchronized to your projects via the Claude Code installer. 
+This framework provides copy-and-go GitHub workflow automation for any project.
 
 ### Project Setup
 
-1. Run the installer in your project:
+1. Copy the framework to your project:
    ```bash
-   curl -sSL https://raw.githubusercontent.com/sbusso/claude-workflow/main/install.sh | bash
+   # Copy the .claude directory
+   cp -r /path/to/this-repo/.claude/ /path/to/your-project/
+   
+   # Copy the project guidance file
+   cp /path/to/this-repo/.claude/CLAUDE.md /path/to/your-project/.claude/
    ```
 
-2. The installer will:
-   - Clone this dotclaude repo into `.claude/`
-   - Set up project-specific configuration outside `.claude/`
-   - Configure GitHub Projects integration
+2. Set up GitHub access:
+   ```bash
+   export GITHUB_PERSONAL_ACCESS_TOKEN="your_github_token"
+   ```
 
-### Synchronization
+3. Start using slash commands immediately!
 
-- **Pull updates**: Changes to this repo sync to all your projects
-- **Push improvements**: Local improvements can be pushed back to share across projects
-- **Project isolation**: Project-specific settings stay outside `.claude/`
+### Framework Benefits
+
+- **Copy-and-go**: No installation scripts or complex setup
+- **GitHub native**: Uses GitHub Issues and MCP for all tracking
+- **AI-powered**: Commands are sophisticated AI instruction templates
+- **Project-aware**: Automatically adapts to your technology stack
 
 ## Development
 
-To contribute improvements to the Claude Code framework:
+### Core Command Templates
 
-1. Make changes in any project's `.claude/` folder
-2. Commit and push changes:
-   ```bash
-   cd .claude
-   git add .
-   git commit -m "improve: description of changes"
-   git push origin main
-   ```
-3. Changes will sync to other projects on next update
+All commands are AI instruction templates located in `.claude/commands/`:
 
-## Project-Specific Settings
+- **Planning commands**: `/project:plan:prd`, `/project:plan:feature`, `/project:plan:tasks`
+- **Implementation commands**: `/project:do:task`
+- **Context commands**: `/project:current`
 
-Project-specific configuration is stored outside `.claude/` in:
-- `.claude-config.json` - Project configuration
-- `claude.local.json` - Local overrides (gitignored)
+### Adding New Commands
 
-This separation allows `.claude/` to be a clean, synchronized workspace while maintaining project-specific customization.
+1. Create a new `.md` file in the appropriate subdirectory
+2. Structure it as step-by-step AI instructions
+3. Include explicit tool usage (e.g., "Use the GitHub tool to...")
+4. Add extended thinking prompts for complex scenarios
+
+### AI Instruction Guidelines
+
+Commands should:
+- Be written as instructions TO the AI, not documentation
+- Use numbered steps for clear progression
+- Specify exact tools to use ("Use the GitHub tool to...")
+- Include validation and quality checks
+- Handle both simple and complex scenarios
+
+## Command Categories
+
+- **`/project:plan:*`** - Create and plan work as GitHub issues
+- **`/project:do:*`** - Execute and implement work
+- **`/project:current`** - Analyze current project state
+
+This framework transforms complex development workflows into systematic, AI-guided processes.

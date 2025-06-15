@@ -4,153 +4,196 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Repository Purpose
 
-This is a **template repository** for managing Claude Code enhancements. It provides:
+This is a **template repository** for Claude Code local todo system. It provides:
 
-- **Command Templates**: Reusable command definitions for common development tasks
-- **Installation Scripts**: Automated setup for shell integration across projects
-- **Code Guidelines**: Language-specific development standards and best practices
-- **Project Templates**: Boilerplate generators for new project setups
+- **Slash Commands**: Context-aware command definitions for development workflows
+- **Local Todo System**: File-based project management with hierarchical task organization
+- **Project Templates**: Context-aware templates for different project types
+- **Zero Installation**: Just copy `.claude/` directory to any project and start using
 
-This repository is the **source of truth** for Claude Code productivity tools that get installed into other projects.
+This repository contains a complete Claude Code setup that works by simply copying the `.claude/` directory to any project.
 
 ## Repository Structure
 
 ```
 .claude/
 ├── commands/
-│   ├── plan/              # Planning and design commands
-│   │   ├── brainstorm.md  # Brainstorming sessions with extended thinking
-│   │   ├── feature.md     # Feature creation with GitHub Projects integration
-│   │   └── tasks.md       # Task breakdown and iteration planning
-│   └── do/                # Execution commands
-│       ├── commit.md      # Git commit workflow with semantic messages
-│       ├── create-pr.md   # Pull request creation with templates
-│       ├── fix-issue.md   # Issue resolution workflow
-│       └── do-issue.md    # Implementation workflow with status management
-├── utils/                 # Workflow automation utilities
-│   ├── get-project-config.sh    # Auto-discover GitHub project configuration
-│   ├── move-item-status.sh      # Move items between project statuses
-│   ├── assign-iteration.sh      # Assign items to project iterations
-│   └── setup-labels.sh          # Create required workflow labels
-├── contexts/             # Language-specific coding standards and contexts
-│   ├── python.md         # Python development guidelines (uv, FastAPI)
-│   ├── typescript.md     # TypeScript development guidelines (bun, TanStack)
-│   └── react.md          # React + TypeScript guidelines (2025 best practices)
-├── templates/            # Project templates and boilerplates
-│   └── ISSUE-TEMPLATE.md # GitHub issue template
-├── settings.json         # Claude Code configuration
-├── project-config.json   # Auto-generated project configuration cache
-└── .mcp.json            # Model Context Protocol server configuration
-install.sh                # Shell integration installer with MCP setup
+│   ├── plan/                    # Planning and design slash commands
+│   │   ├── brainstorm.md        # /project:plan:brainstorm - Extended thinking sessions
+│   │   ├── prd.md              # /project:plan:prd - Product Requirements Documents
+│   │   ├── feature.md          # /project:plan:feature - Technical feature planning
+│   │   └── tasks.md            # /project:plan:tasks - Task breakdown with hierarchy
+│   ├── do/                     # Execution slash commands
+│   │   ├── task.md             # /project:do:task - Execute specific tasks
+│   │   ├── commit.md           # /project:do:commit - Git commit workflow
+│   │   ├── changelog.md        # /project:do:changelog - Generate changelogs
+│   │   └── create-worktrees.md # /project:do:create-worktrees - Git worktree management
+│   ├── setup/                  # Setup and configuration commands
+│   │   └── smart-merge.md      # /project:setup:smart-merge - Intelligent file merging
+│   └── project.md              # /project:current - Show current context
+├── templates/                  # Context-aware project templates
+│   ├── base/                   # Universal templates
+│   ├── web-app/               # React/Next.js optimized templates
+│   ├── api-service/           # FastAPI/Express optimized templates
+│   ├── cli-tool/              # CLI application templates
+│   └── saas-platform/         # Multi-service platform templates
+├── todo/                      # Local todo system (auto-generated)
+│   ├── templates/             # Template files for PRDs, features, tasks
+│   ├── prd-001-example/       # Product Requirements Documents
+│   │   ├── prd.md
+│   │   ├── status.md
+│   │   └── tasks/             # Hierarchical task breakdown
+│   └── feature-002-example/   # Technical features
+│       ├── feature.md
+│       ├── status.md
+│       └── tasks/
+├── contexts/                  # Language-specific coding standards
+│   ├── python.md             # Python development guidelines (uv, FastAPI)
+│   ├── typescript.md         # TypeScript development guidelines (bun, TanStack)
+│   └── react.md              # React + TypeScript guidelines (2025 best practices)
+├── archive/                   # Archived systems
+│   ├── github-commands/       # Former GitHub Issues workflow commands
+│   └── github-utils/          # Former GitHub Projects automation scripts
+├── utils/                     # Current utilities
+│   ├── merge-mcp.sh          # MCP configuration merging
+│   └── smart-merge.sh        # Intelligent file merging
+├── settings.json             # Claude Code configuration
+└── .mcp.json                # Model Context Protocol server configuration
+README.md                     # Copy-and-go setup instructions
 ```
 
-## Command Development Workflow
+## Local Todo System Workflow
 
-### Adding New Commands
-1. Create new `.md` file in appropriate subdirectory (`plan/` or `do/`)
-2. Follow command template structure with clear argument handling
+### **Core Slash Commands**
+
+#### **Planning Commands**
+```bash
+/project:plan:prd "user authentication system"        # Create comprehensive PRD
+/project:plan:feature "dark mode toggle"              # Create focused technical feature  
+/project:plan:tasks "prd-001-user-auth"              # Break down into hierarchical tasks
+```
+
+#### **Execution Commands**
+```bash
+/project:do:task "prd-001-user-auth/tasks/1-research" # Execute specific task
+/project:current                                      # Show project context
+```
+
+### **Context-Aware System**
+
+The system automatically detects project type and adapts:
+
+#### **Project Type Detection**
+- **Web Application**: React, Next.js, frontend frameworks → Uses web-app templates
+- **API Service**: FastAPI, Django, Express, Go APIs → Uses api-service templates  
+- **CLI Tool**: Command-line applications → Uses cli-tool templates
+- **SaaS Platform**: Multi-service architecture → Uses saas-platform templates
+
+#### **Hierarchical Task Organization**
+```
+Tasks use intelligent numbering:
+├── 1-research-requirements.md           # Simple sequence
+├── 2-backend-implementation.md          
+├── 2.1-api-endpoints.md                # Nested breakdown
+├── 2.2-data-models.md
+├── 3-frontend-development.md
+├── 3.1-components.md
+├── 3.2-integration.md
+└── 4-testing-and-deployment.md
+```
+
+### **Complete Workflow Process**
+1. **`/project:plan:prd`** - Create comprehensive product requirements with market research
+2. **`/project:plan:feature`** - Create focused technical features for specific capabilities
+3. **`/project:plan:tasks`** - Break down PRDs/features into implementable tasks with hierarchy
+4. **`/project:do:task`** - Execute individual tasks with progress tracking
+5. **`/project:current`** - Monitor progress and get context-aware suggestions
+
+## Command Development Standards
+
+### **Slash Command Structure**
+- **Path Format**: `/project:category:command` (e.g., `/project:plan:prd`)
+- **Parameter**: Use `$ARGUMENTS` for dynamic content
+- **Documentation**: Include usage examples and clear descriptions
+- **Context-Aware**: Adapt behavior based on detected project type
+
+### **Adding New Commands**
+1. Create `.md` file in appropriate subdirectory (`plan/`, `do/`, `setup/`)
+2. Follow command template structure with `$ARGUMENTS` variable
 3. Include usage examples and expected outputs
-4. Test command functionality before committing
+4. Test command functionality across different project types
+5. Update this documentation
 
-### Updating Existing Commands
-1. Maintain backward compatibility with `$ARGUMENTS` variable
-2. Update documentation and examples
-3. Test changes across different project types
+### **Template Development**
+1. Create base template in `.claude/templates/base/`
+2. Create project-specific variants in appropriate subdirectories
+3. Use template variables: `{TITLE}`, `{DATE}`, `{PRIORITY}`, etc.
+4. Test template selection and customization
 
-### Command Structure Standards
-- Use `$ARGUMENTS` for user input capture
-- Include clear task descriptions and expected outcomes
-- Provide error handling and validation steps
-- Follow consistent markdown formatting
+## Context-Aware Features
 
-## Installation Management
+### **Intelligent Thinking Prompts**
+Commands include context-aware extended thinking based on:
+- **Project Type**: Web app, API service, CLI tool, SaaS platform
+- **Complexity Level**: Simple, moderate, complex
+- **Command Purpose**: Research, planning, implementation, architecture
 
-### install.sh Maintenance
-- Update shell integration commands as needed
-- Maintain compatibility with zsh environment
-- Handle existing installation detection and updates
-- Provide clear user feedback during installation
+### **Smart Template Selection**
+- Automatically detects project technology stack
+- Selects appropriate template based on project type
+- Provides project-specific guidance and best practices
+- Adapts requirements and validation criteria
 
-### Testing Installation
-- Test on clean environment without existing Claude setup
-- Test update scenarios with existing installations
-- Verify all command aliases work correctly after installation
+### **Project Context Preservation**
+- Maintains working context between command executions
+- Tracks recent commands and suggests next actions
+- Provides intelligent defaults based on project state
+- Enables seamless workflow continuation
 
-## Context Management
+## Migration from GitHub Issues System
 
-### Updating Contexts
-- Keep contexts current with latest best practices
-- Maintain consistency between language-specific guides
-- Update package management recommendations (uv for Python, bun for Node.js)
-- Ensure 300-line file limit is consistently enforced
+### **Former GitHub Workflow** (Archived)
+The repository previously used GitHub Issues and Projects for task management. These components have been moved to `.claude/archive/`:
 
-### Adding New Language Contexts
-- Follow existing structure and format
-- Include package management, project setup, and best practices
-- Provide clear examples and command references
-- Integrate with existing command system
+- **GitHub Commands**: `do-issue.md`, `fix-issue.md`, `create-pr.md`
+- **GitHub Utilities**: Project status management, iteration assignment, label setup
+- **GitHub Integration**: Issues, Projects, automated status updates
+
+### **Benefits of Local System**
+- **No External Dependencies**: Works completely offline
+- **Faster Operation**: No API calls or network dependencies
+- **Flexible Organization**: Hierarchical task numbering and custom structures
+- **Project Type Awareness**: Context-aware templates and thinking prompts
+- **Team Collaboration**: File-based system works with any git workflow
 
 ## Quality Standards
 
-### Command Quality
-- All commands must be thoroughly tested
+### **Command Quality**
+- All commands thoroughly tested across project types
 - Include proper error handling and user feedback
 - Maintain consistent argument parsing and output formatting
-- Provide clear usage documentation
+- Provide clear usage documentation and examples
 
-### Documentation Standards
-- Keep all documentation current and accurate
-- Use consistent markdown formatting
+### **Template Quality**
+- Keep templates current with technology best practices
+- Maintain consistency between project-type variants
+- Include comprehensive sections for different use cases
+- Provide clear guidance and validation criteria
+
+### **Documentation Standards**
+- Use consistent markdown formatting throughout
 - Include practical examples and use cases
-- Maintain clear separation between template content and instructions
-
-## GitHub Projects Workflow System
-
-This template provides a complete GitHub Projects-based development workflow with automation utilities:
-
-### Complete Workflow Process
-1. **@feature.md** - Create features in backlog with extended thinking for complex requirements
-2. **@tasks.md** - Break down features into implementable tasks with iteration assignment
-3. **@do-issue.md** - Implement tasks with status management and branch creation
-4. **GitHub Automation** - PR merge automatically moves tasks to "Done" and closes issues
-
-### GitHub Projects Status Flow
-- **Todo** (Backlog): Features awaiting planning, tasks ready for implementation
-- **In Progress**: Tasks being actively implemented
-- **Done**: Completed tasks (auto-set when PRs merged, auto-closes issues)
-
-### Workflow Automation Utilities
-The `.claude/utils/` directory contains automation scripts:
-- **`get-project-config.sh`** - Auto-discovers project configuration (fields, iterations, options)
-- **`move-item-status.sh <issue> <status>`** - Moves items between project statuses
-- **`assign-iteration.sh <issue> <iteration>`** - Assigns items to project iterations  
-- **`setup-labels.sh`** - Creates required workflow labels for repositories
-
-### Extended Thinking Integration
-Commands use extended thinking prompts for complex scenarios:
-- **Feature creation**: "Think deeply about this feature request..."
-- **Task planning**: "Think deeply about breaking down this feature..."
-- **Implementation**: "Think deeply about implementing this issue..."
-
-### Tested Workflow Example
-✅ **Fully tested end-to-end workflow:**
-- Feature #4: User Authentication System
-- Tasks: #5 (Backend), #6 (Frontend), #7 (Security), #8 (Testing)
-- Status transitions: Backlog → Todo → In Progress → Done
-- All utilities working with real GitHub Projects integration
+- Maintain clear separation between instructions and content
+- Update documentation when adding or changing commands
 
 ## Model Context Protocol (MCP) Integration
 
-The framework includes pre-configured MCP servers for enhanced functionality:
-
-### Included MCP Servers
+### **Included MCP Servers**
 - **Context7**: Up-to-date documentation for any library or framework
 - **Playwright**: Browser automation and testing capabilities  
 - **GitHub**: Enhanced repository and API integration
 
-### MCP Configuration
-MCP servers are defined in `.mcp.json` and automatically installed by `install.sh`:
-
+### **MCP Configuration**
 ```json
 {
   "servers": {
@@ -173,96 +216,36 @@ MCP servers are defined in `.mcp.json` and automatically installed by `install.s
 }
 ```
 
-### Usage Examples
-- **Context7**: Add `use context7` to any prompt for current documentation
-- **Playwright**: Browser automation for testing GitHub Projects workflow
-- **GitHub**: Enhanced GitHub API access and repository management
+## Usage Instructions
 
-### MCP Scope
-MCPs are installed with `--scope project` so they're available to all users of the template but isolated per project.
-
-## Sub-Task Usage Guidelines
-
-When working on complex tasks that require multiple independent operations, use the **Task tool** to spawn sub-agents:
-
-### When to Use Sub-Tasks
-- **Workflow Testing**: Testing complete feature → planning → implementation flows
-- **Multi-Repository Operations**: When work spans multiple repositories or projects
-- **Parallel Task Execution**: When multiple independent tasks can be done simultaneously
-- **Complex Automation**: When testing or executing complex workflows end-to-end
-- **Isolation Required**: When testing should not affect current working state
-
-### Sub-Task Best Practices
-```
-Task(
-  description="Brief 3-5 word description",
-  prompt="Detailed instructions with:
-    - Specific steps to execute
-    - Expected outputs/results to report back
-    - Context about the current project state
-    - Clear success criteria"
-)
-```
-
-### Sub-Task Guidelines
-- **Be Specific**: Provide detailed step-by-step instructions
-- **Include Context**: Sub-agents need full context about project state
-- **Define Success**: Clearly state what constitutes successful completion
-- **Report Results**: Ask sub-agents to provide comprehensive status reports
-- **Use for Testing**: Ideal for testing workflows without affecting main agent state
+### Copy-and-Go Setup
+1. **Copy** the `.claude/` directory to any project
+2. **Start using** slash commands immediately
+3. **No installation** or configuration required
 
 ### Example Usage
-Successfully used sub-tasks for:
-- ✅ Testing feature creation workflow (created issue #4)
-- ✅ Testing planning workflow (created tasks #5-#9)  
-- ✅ Testing implementation workflow (status transitions, branch creation)
-- ✅ Validating end-to-end GitHub Projects integration
-
-## GitHub Projects Setup Requirements
-
-To use the workflow automation system, projects need:
-
-### Required GitHub CLI Setup
 ```bash
-# Ensure GitHub CLI has project scope
-gh auth refresh -s project --hostname github.com
+# Copy to your project
+cp -r /path/to/this-repo/.claude/ /path/to/your-project/
 
-# Verify access to projects
-gh project list --owner [USERNAME]
+# Start using commands
+/project:plan:prd "user authentication system"
+/project:plan:feature "dark mode toggle"
+/project:current
 ```
-
-### Required Labels
-Run the setup utility to create workflow labels:
-```bash
-.claude/utils/setup-labels.sh
-```
-
-### Required Project Fields
-GitHub Projects should have these fields:
-- **Status**: Single select with options: Todo, In Progress, Done
-- **Iteration**: Iteration field with current and future iterations
-- **Priority**: Single select (optional, recommended: P0, P1, P2)
-- **Size**: Single select (optional, recommended: XS, S, M, L, XL)
-
-### Auto-Configuration System
-- **Auto-discovery**: Run `.claude/utils/get-project-config.sh [project-name]` to discover configuration
-- **Caching**: Configuration cached in `project-config.json` for fast utility access
-- **Project targeting**: Pass project name as argument, defaults to "Test"
-- **Updates**: Re-run configuration discovery when project structure changes
-
-### GitHub's Built-in Automations
-Enable these default workflows in your GitHub Project:
-- ✅ Auto-set status to "Done" when PR merged
-- ✅ Auto-close issues when status = "Done"  
-- ✅ Auto-set status to "Todo" when items added
 
 ## Maintenance Tasks
 
 - Regular review and update of command templates
-- Testing installation script across different environments  
-- Updating code guidelines with current best practices
-- Expanding command library based on common development patterns
+- Testing slash commands across different project types
+- Updating project-type detection and template selection
+- Expanding template library based on common development patterns
 - Ensuring all templates remain current and functional
-- Testing workflow automation utilities with new GitHub features
-- Updating project configuration discovery for GitHub API changes
+- Testing context-aware features with real projects
 - Maintaining MCP server configurations and versions
+
+# important-instruction-reminders
+Do what has been asked; nothing more, nothing less.
+NEVER create files unless they're absolutely necessary for achieving your goal.
+ALWAYS prefer editing an existing file to creating a new one.
+NEVER proactively create documentation files (*.md) or README files. Only create documentation files if explicitly requested by the User.

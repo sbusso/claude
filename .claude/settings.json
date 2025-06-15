@@ -5,7 +5,8 @@
     "Fetch": true,
     "mcp__context7": true,
     "mcp__playwright": true,
-    "mcp__github": true
+    "mcp__github": true,
+    "mcp__zen": true
   },
   "mcpServers": {
     "context7": {
@@ -17,10 +18,26 @@
       "args": ["-y", "@executeautomation/playwright-mcp-server"]
     },
     "github": {
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-github"],
+      "command": "docker",
+      "args": [
+        "run",
+        "-i",
+        "--rm",
+        "-e",
+        "GITHUB_PERSONAL_ACCESS_TOKEN",
+        "ghcr.io/github/github-mcp-server"
+      ],
       "env": {
         "GITHUB_PERSONAL_ACCESS_TOKEN": ""
+      }
+    },
+    "zen": {
+      "command": "npx",
+      "args": ["-y", "zen-mcp-server"],
+      "env": {
+        "OPENROUTER_API_KEY": "",
+        "GEMINI_API_KEY": "",
+        "OPENAI_API_KEY": ""
       }
     }
   },

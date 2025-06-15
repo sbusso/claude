@@ -1,126 +1,165 @@
-You are tasked with creating a comprehensive GitHub issue for feature requests bug reports, or improvement ideas. Your goal is to transform the feature description into a comprehensive GitHub issue that will be added to the project backlog. Focus on product-level requirements and user value, with minimal technical implementation details. Follow best practices and project conventions.
+# Create Technical Feature
 
-Here is the feature description:
-<feature_description>
-$ARGUMENTS
-</feature_description>
+You are creating a focused technical feature document as a GitHub issue for direct implementation. Follow this systematic approach to create a well-scoped, implementable feature.
 
-Follow these steps to create the GitHub issue:
+**Task:** Create a technical feature for: $ARGUMENTS
 
-1. Research the repository:
+## Step 1: Analyze Feature Scope
 
-   - Visit the provided repo_ur? and examine the repository's structure, existing issues, and documentation.
-   - Look for any CONTRIBUTING.md, ISSUE_TEMPLATE.md, or similar files that might contain guidelines for creating issues.
-   - Note the project's coding style, naming conventions, and any specific requirements for submitting issues.
+**Determine what type of feature this is:**
+1. **UI/UX Enhancement**: User interface improvements, new interactions
+2. **Technical Integration**: APIs, services, third-party integrations  
+3. **Infrastructure**: Performance, security, deployment improvements
+4. **Developer Experience**: Tooling, debugging, development workflow
 
-2. Research best practices:
+**Assess the complexity level:**
+1. **Simple**: Single component or straightforward addition
+2. **Moderate**: Multiple components with integration points
+3. **Complex**: Cross-system changes or new architecture patterns
 
-   - Search for current best practices in writing GitHub issues, focusing on clarity, completeness, and actionability.
-   - Look for examples of well-written issues in popular open-source projects for inspiration.
+## Step 2: Adapt to Project Context
 
-3. Feature Analysis:
+**Use analysis tools to understand the project:**
+1. Use file analysis tools to detect project type and structure
+2. Use the Read tool to check current technology stack
+3. Use the Glob tool to identify existing patterns and architectural decisions
+4. Determine appropriate feature focus areas for this project type
 
-   a. Assess feature complexity by checking for:
+**Focus your feature based on project type:**
+- **Web Apps**: User experience, responsive design, performance impact
+- **APIs**: Endpoint design, data models, integration patterns
+- **CLI Tools**: Command interface, user experience, cross-platform support
+- **SaaS Platforms**: Multi-tenancy, scalability, service boundaries
 
-   - Cross-system integration requirements
-   - New user workflows or paradigms
-   - Performance or security implications
-   - Multiple stakeholder impacts
+## Step 3: Perform Extended Thinking (for Complex Features)
 
-   b. Extract core information from the feature description:
+**If you assessed this as a complex feature, engage in deep thinking:**
+Think deeply about this technical feature: '$ARGUMENTS'. Consider the system architecture, integration patterns, data flow, error handling, testing strategy, and how this fits into the overall system design. What are the key technical decisions and potential challenges?
 
-   - User Story (Who, What, Why) - focus on the user need and benefit
-   - Business Value (Problem solved, User impact, Success metrics)
-   - Functional Requirements (what the feature must do)
-   - Non-Functional Requirements (performance, security, usability)
+## Step 4: Analyze Technical Requirements
 
-   c. Define clear scope boundaries:
+**Assess system impact across all areas:**
+1. **Frontend**: Identify needed components, state management changes, user interactions, routing updates
+2. **Backend**: Determine required APIs, business logic changes, data processing, validation rules  
+3. **Database**: Check for schema changes, new queries, performance implications
+4. **Infrastructure**: Consider configuration, deployment, monitoring requirements
 
-   - In Scope: Core functionality, essential user interactions, required integrations
-   - Out of Scope: Advanced features for future iterations, edge cases for later consideration, optional enhancements
+**Analyze integration requirements:**
+1. Identify external service dependencies
+2. Map internal system communication needs
+3. Define data flow and transformation requirements
+4. Assess authentication and authorization impact
 
-4. Present a plan:
+**Define non-functional requirements:**
+1. Set performance expectations and constraints
+2. Identify security considerations and requirements
+3. Define scalability and reliability needs
+4. Ensure accessibility and usability standards are met
 
-- Based on your research, outline a plan for creating the Github issue.
-- Include the proposed structure of the issue, any label or milestone you plan to use, and how you'll incorporate project-specific conventions.
-- Present this plan in <plan> tags.
+## Step 5: Create GitHub Issue
 
-  ```markdown
-  ## User Story
+**Use the GitHub tool to create a focused feature issue:**
+1. Set the title using format: `[Feature] {Feature Name}`
+2. Add labels: `feature`, `enhancement`, and area labels (e.g., `frontend`, `backend`, `api`)
+3. Use this template for the issue body:
+```markdown
+# Feature: {Feature Name}
 
-  As a [user type], I want to [capability] so that [benefit].
+## Overview
+{2-3 sentence description of the feature}
 
-  ## Problem Statement
+## User Story
+As a {user type}, I want to {capability} so that {benefit}.
 
-  [2-3 sentences describing the problem this feature solves]
+## Problem Statement
+{Specific problem this feature solves}
 
-  ## Acceptance Criteria
+## Acceptance Criteria
+- [ ] Given {condition}, when {action}, then {expected result}
+- [ ] Given {condition}, when {action}, then {expected result}
+- [ ] Given {condition}, when {action}, then {expected result}
 
-  - [ ] Given [condition], when [action], then [expected result]
-  - [ ] Given [condition], when [action], then [expected result]
-  - [ ] Given [condition], when [action], then [expected result]
+## Technical Requirements
 
-  ## User Experience Requirements
+### System Areas Affected
+- [ ] Frontend
+- [ ] Backend
+- [ ] CLI
+- [ ] Database
+- [ ] Infrastructure
 
-  - [Describe key user interactions]
-  - [Specify required user flows]
-  - [Define success/error states]
+### Implementation Approach
+{High-level approach to implementation}
 
-  ## Business Value
+### Key Components
+- {Component 1}: {Description}
+- {Component 2}: {Description}
 
-  - **Primary Benefit**: [Main value proposition]
-  - **Success Metrics**: [How success will be measured]
-  - **Impact**: [Who benefits and how]
+### Data Requirements
+{Any data model changes, API endpoints, or storage needs}
 
-  ## Functional Requirements
+## Dependencies
+### Internal Dependencies
+- {Dependency 1}
+- {Dependency 2}
 
-  - [Core capability 1]
-  - [Core capability 2]
-  - [Core capability 3]
+### External Dependencies
+- {Library/Service 1}
+- {Library/Service 2}
 
-  ## Dependencies
+## Success Criteria
 
-  - [ ] [Dependency 1]
-  - [ ] [Dependency 2]
+### Definition of Done
+- [ ] All acceptance criteria met
+- [ ] Tests written and passing
+- [ ] Documentation updated
+- [ ] Code reviewed and merged
+- [ ] Feature deployed and verified
 
-  ## Definition of Done
+### Success Metrics
+- {Metric 1}: {Target}
+- {Metric 2}: {Target}
 
-  - [ ] All acceptance criteria met
-  - [ ] User experience flows work end-to-end
-  - [ ] Performance requirements satisfied
-  - [ ] Security requirements implemented
-  - [ ] Accessibility standards met
-  - [ ] Documentation updated
-  - [ ] Tests cover all acceptance criteria
+## Risk Assessment
+### Technical Risks
+- {Risk 1}: {Mitigation}
+- {Risk 2}: {Mitigation}
 
-  ## Technical Notes
+### Timeline Risks
+- {Risk 1}: {Mitigation}
+- {Risk 2}: {Mitigation}
 
-  [High-level technical considerations only - implementation details will be planned separately]
-  ```
+## Technical Notes
+{Key implementation details and considerations}
+```
 
-5. Create the GitHub issue:
+## Step 6: Validate Feature Quality
 
-   - Draft the GitHub issue using the template structure above
-   - Include clear title, detailed description, and acceptance criteria
-   - Use appropriate formatting (Markdown) for readability
-   - Create the issue: `gh issue create --title "[Feature] [brief description]" --body "[content]"`
-   - Add to GitHub Project and set appropriate fields
+**Check technical completeness:**
+1. Verify clear scope and requirements are defined
+2. Ensure implementation approach is validated and feasible
+3. Confirm dependencies and risks are identified
+4. Verify testing strategy is outlined
 
-6. Issue validation:
+**Verify quality standards:**
+1. Ensure acceptance criteria are specific and testable
+2. Confirm security considerations are addressed
+3. Verify performance requirements are defined
+4. Check that error handling is planned
 
-   Review the issue against these criteria:
+**Confirm implementation readiness:**
+1. Verify there are no blocking dependencies
+2. Ensure technical approach is feasible with current technology stack
+3. Confirm resource requirements are realistic
+4. Verify timeline is achievable
 
-   - Clear user story with who/what/why
-   - Specific and testable acceptance criteria
-   - Measurable success criteria and outcomes
-   - Clear scope boundaries (in/out of scope)
-   - Focused on user value and problem-solving, not implementation details
-   - Requirements are specific and clear
+## Step 7: Provide Feature Summary
 
-   Consider human review if the feature:
+**Create a comprehensive summary of what you accomplished:**
+- **GitHub Issue Created**: Issue number and full title
+- **Project Type and Focus**: Areas identified and feature scope
+- **Key Technical Considerations**: Important architecture and integration decisions
+- **Next Steps**: Recommended approach for task breakdown and implementation
+- **Reference**: Note that this feature can be referenced by its GitHub issue number
 
-   - Affects core user workflows
-   - Introduces new user-facing concepts
-   - Has high business logic complexity
-
-Your final output should be the completed GitHub issue content, structured according to the template provided in step 2. Do not include any of the explanatory text or steps in your output. Begin your response with the heading "## User Story" and end it with the "## Technical Notes" section. Ensure all sections are filled out based on the feature description provided.
+This systematic approach ensures your feature is well-scoped, technically sound, and ready for task breakdown and implementation.

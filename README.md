@@ -1,255 +1,218 @@
-# Claude Code Workflow Framework
+# Claude Code GitHub Workflow System
 
-A synchronized workspace installer for Claude Code that provides consistent development workflows across all your projects.
+A powerful, AI-driven development workflow system for Claude Code. **Copy the `.claude/` directory to any project and get intelligent GitHub Issues-based project management.**
 
-## Overview
+## 🚀 Quick Setup
 
-This installer sets up a **synchronized Claude Code workspace** that:
-- **Syncs across all projects** - One workspace, shared everywhere
-- **Pure memory + settings approach** - No file copying, just git sync
-- **Native Claude Code integration** - Uses built-in memory and settings systems
-- **Two-way synchronization** - Share improvements back to the framework
+**Simple copy-and-go setup with GitHub integration:**
 
-## Architecture
-
-### Two Repository System
-1. **claude-workflow** (this repo) - Installer script only
-2. **[dotclaude](https://github.com/sbusso/dotclaude)** - Shared workspace that syncs to `.claude/`
-
-### How It Works
-- `.claude/` in each project is a git repository synced with dotclaude
-- Project `CLAUDE.md` imports framework memory: `@.claude/memory/workflow.md`
-- MCP configuration lives in `.claude/settings.json` (shared)
-- Local overrides use `*.local.*` files (ignored by git)
-
-## Quick Install
-
-### One-Liner Installation
+1. **Copy** the `.claude/` directory to your project root
+2. **Include** the `CLAUDE.md` file for project-specific guidance
+3. **Set up** GitHub MCP server with your personal access token
+4. **Start using** slash commands immediately
 
 ```bash
-curl -sSL https://raw.githubusercontent.com/sbusso/claude-workflow/main/install.sh | bash
+# 1. Copy the .claude/ directory to your project
+cp -r /path/to/this-repo/.claude/ /path/to/your-project/
+
+# 2. Copy the project guidance file
+cp /path/to/this-repo/.claude/CLAUDE.md /path/to/your-project/.claude/
+
+# 3. Set up GitHub access (required)
+export GITHUB_PERSONAL_ACCESS_TOKEN="your_github_token"
+
+# 4. Start using commands:
+# /project:plan:prd "user authentication system"
+# /project:plan:feature "dark mode toggle"  
+# /project:current
 ```
 
-The installer will:
-- Install shell integration with command aliases
-- Clone the dotclaude workspace to `.claude/`
-- Create minimal project `CLAUDE.md` with workflow import
-- Set up MCP integration (Context7, Playwright, GitHub)
-- Configure proper gitignore for local files
+## 📋 Core Slash Commands
 
-### What Gets Created
-
-**In your project:**
-```
-your-project/
-├── CLAUDE.md                    # Imports @.claude/memory/workflow.md
-├── .claude/                     # Git repo synced with dotclaude
-│   ├── commands/               # Planning & implementation commands
-│   ├── contexts/               # Language-specific coding standards
-│   ├── memory/                 # Workflow context and guidelines
-│   ├── settings.json           # MCP config & permissions (shared)
-│   ├── settings.local.json     # Your personal overrides (ignored)
-│   ├── utils/                  # GitHub Projects automation
-│   └── templates/              # Project templates
-└── .claude-config.json          # Project-specific configuration
-```
-
-## Core Workflow
-
-### Planning Commands
-- `/project:feature "description"` - Create feature issues with analysis
-- `/project:breakdown 123` - Break features into implementation tasks  
-- `/project:implement "tech task"` - Direct technical implementation planning
-- `/project:brainstorm "problem"` - Critical thinking problem exploration
-
-### Implementation Commands  
-- `/project:do-issue 123` - Smart test-first development
-- `/project:commit "message"` - Semantic commits
-- `/project:create-pr` - Standardized pull requests
-
-### Shell Aliases
+### **Planning Workflow**
 ```bash
-ccf "feature description"    # Create feature
-ccbd 123                    # Break down feature  
-ccim "add CORS support"     # Implement technical task
-cci 123                     # Implement issue
-ccc "commit message"        # Create commit
-ccpr                        # Create PR
-ccb "problem"               # Brainstorm
-ccsync                      # Pull workspace updates
-ccpush                      # Push workspace improvements
+/project:plan:prd "user authentication system"        # Create comprehensive PRD as GitHub issue
+/project:plan:feature "dark mode toggle"              # Create focused feature as GitHub issue
+/project:plan:tasks "#123"                            # Break down issue into task issues
 ```
 
-## Workspace Synchronization
-
-### Pull Updates
+### **Implementation Workflow**  
 ```bash
-ccsync                      # Shell alias
-# or
-cd .claude && git pull origin main
+/project:do:task "#124"                               # Implement specific task issue
+/project:current                                      # Show project context and active work
 ```
 
-### Push Improvements  
+## 🧠 Context-Aware Intelligence
+
+The system automatically adapts to your project:
+
+### **Project Type Detection**
+- **Web Application** (React, Next.js) → UX-focused templates and thinking
+- **API Service** (FastAPI, Express) → Endpoint and data model focused
+- **CLI Tool** (Go, Rust) → Command design and cross-platform focused
+- **SaaS Platform** → Multi-tenancy and scalability focused
+
+### **Smart Templates**
+Each project type gets optimized templates:
+- **Web Apps**: UX requirements, responsive design, accessibility, performance
+- **APIs**: Endpoint specs, data models, authentication, scalability
+- **CLI Tools**: Command interface, installation, cross-platform support
+
+### **Intelligent Task Breakdown**
+```
+Simple features:     1, 2, 3, 4
+Complex features:    1, 1.1, 1.2, 2, 2.1, 2.2
+Very complex:        1, 1.1, 1.1.1, 1.1.2, 1.2, 2.1.1, 2.1.2
+```
+
+## 📁 GitHub Issues Workflow
+
+The system creates and manages GitHub Issues for all work tracking:
+
+### **Issue Types**
+- **`[PRD]` Issues** - Comprehensive Product Requirements Documents with market research
+- **`[Feature]` Issues** - Focused technical features with implementation details
+- **`[Task]` Issues** - Specific implementation tasks linked to parent issues
+
+### **Issue Organization**
+```
+GitHub Repository Issues:
+├── #123 [PRD] User Authentication System          # Parent PRD issue
+│   ├── #124 [Task] Backend: OAuth provider research
+│   ├── #125 [Task] Backend: API endpoints implementation  
+│   ├── #126 [Task] Frontend: Login form component
+│   └── #127 [Task] Testing: Authentication flow tests
+├── #128 [Feature] Dark Mode Toggle                # Feature issue
+│   ├── #129 [Task] Frontend: CSS variables setup
+│   ├── #130 [Task] Frontend: Toggle component
+│   └── #131 [Task] Frontend: Persistence logic
+└── Labels: prd, feature, task, frontend, backend, testing
+```
+
+### **Automatic Issue Linking**
+- Task issues reference parent issues
+- Pull requests automatically close task issues
+- Progress tracked through issue status and labels
+
+## 🎯 Complete Workflow Example
+
 ```bash
-ccpush                      # Shell alias
-# or  
-cd .claude && git add . && git commit -m "improve: description" && git push
+# 1. Create a comprehensive PRD with market research (creates GitHub issue #123)
+/project:plan:prd "user authentication and authorization system"
+
+# 2. Break it down into implementable tasks (creates issues #124, #125, #126, #127)
+/project:plan:tasks "#123"
+
+# 3. Start implementing tasks
+/project:do:task "#124"    # Research OAuth providers
+/project:do:task "#125"    # API endpoints implementation
+
+# 4. Check progress and get suggestions
+/project:current
+
+# 5. Create focused features for specific capabilities (creates issue #128)
+/project:plan:feature "password reset flow"
+/project:plan:tasks "#128"
 ```
 
-### Framework Updates
-When the dotclaude repository is updated:
-1. All projects can `ccsync` to get latest commands/guidelines
-2. New memory files and utilities automatically available
-3. MCP configuration stays current across projects
+## 🔧 Included Features
 
-## Memory System
+### **Context-Aware Thinking**
+Commands include intelligent thinking prompts:
+- **Simple tasks**: Quick, focused analysis
+- **Complex features**: Deep architectural thinking
+- **PRDs**: Strategic business and technical analysis
 
-Claude Code automatically loads memory files:
+### **Project Templates**
+Ready-to-use templates for common project types:
+- **`templates/web-app/`** - React, Next.js, frontend frameworks
+- **`templates/api-service/`** - FastAPI, Express, API development
+- **`templates/cli-tool/`** - Command-line applications
+- **`templates/saas-platform/`** - Multi-service architectures
 
-**Project Memory (tracked):**
-```markdown
-# CLAUDE.md
-@.claude/memory/workflow.md
+### **MCP Integration** 
+Pre-configured Model Context Protocol servers:
+- **Context7**: Up-to-date documentation for any library
+- **Playwright**: Browser automation and testing
+- **GitHub**: Repository integration
+- **Zen**: Multi-model AI collaboration
 
-## Project-Specific Context
-Add your project instructions here.
-```
+### **Context System**
+Language-specific development standards:
+- **`contexts/python.md`** - Python development guidelines (uv, FastAPI, Pydantic)
+- **`contexts/typescript.md`** - TypeScript development guidelines (bun, TanStack Router)
+- **`contexts/react.md`** - React development guidelines (React 19, Server Components)
+- **`contexts/tailwind.md`** - Tailwind CSS patterns and best practices
 
-**Framework Memory (synced):**
-- `.claude/memory/workflow.md` - Core workflow commands and aliases
-- `.claude/memory/project-setup.md` - Package manager guidelines
-- `.claude/contexts/` - Language-specific coding standards (Python, TypeScript, React)
-- Additional memory files for specific contexts
+## 📊 Benefits
 
-## Settings & MCP
+### **GitHub Integration Advantages**
+- ✅ **Native issue tracking** - All work tracked in GitHub Issues
+- ✅ **Automatic linking** - PRs close issues, tasks link to parents
+- ✅ **Team collaboration** - Shared visibility through GitHub
+- ✅ **No external tools** - Everything in your existing GitHub workflow
+- ✅ **AI-powered** - Sophisticated instruction templates guide development
 
-**Shared Configuration (`.claude/settings.json`):**
-- MCP server definitions
-- Shared permissions
-- Framework defaults
+### **Intelligence Features**
+- 🧠 **Context-aware templates** based on detected project type
+- 🎯 **Smart task breakdown** with automatic issue creation
+- 📈 **Progress tracking** through GitHub issue status
+- 🔄 **Workflow continuity** between command executions  
+- 💡 **Intelligent suggestions** based on current issue state
 
-**Local Overrides (`.claude/settings.local.json`):**
-- Personal preferences
-- Environment-specific settings
-- Authentication tokens
+## 🛠️ Customization
 
-Example MCP setup:
-```json
-{
-  "mcpServers": {
-    "context7": {
-      "command": "npx",
-      "args": ["-y", "@context7/mcp"]
-    },
-    "github": {
-      "command": "npx", 
-      "args": ["-y", "@modelcontextprotocol/server-github"],
-      "env": {
-        "GITHUB_PERSONAL_ACCESS_TOKEN": ""
-      }
-    },
-    "zen": {
-      "command": "npx",
-      "args": ["-y", "zen-mcp-server"],
-      "env": {
-        "OPENROUTER_API_KEY": "",
-        "GEMINI_API_KEY": ""
-      }
-    }
-  }
-}
-```
+### **Customize AI Instructions**
+Edit command templates in `.claude/commands/` to match your needs:
+- Modify thinking prompts for your domain
+- Adjust validation criteria for your standards
+- Add company-specific requirements
 
-## Development Philosophy
+### **Add New Commands**
+Create new AI instruction templates by adding `.md` files:
+- `.claude/commands/plan/` - Planning instruction templates
+- `.claude/commands/do/` - Implementation instruction templates
+- `.claude/commands/project/` - Context analysis instruction templates
 
-**Move fast, test smart, keep it simple.**
+### **Extend Project Context**
+Customize project guidance in `.claude/CLAUDE.md`:
+- Add company-specific development standards
+- Include custom quality checklists
+- Define team-specific workflows
 
-- **Test what matters** - Core business logic and critical user flows
-- **Skip trivial tests** - Getters, framework code, styling
-- **300-line file limit** - Keep components focused
-- **Modern tooling** - uv for Python, bun for Node.js
-- **Smart automation** - Let GitHub Projects handle tracking
+## 🔍 What's Different
 
-## GitHub Projects Integration
+### **vs Raw GitHub Issues**
+- **AI-guided creation** instead of manual issue writing
+- **Intelligent templates** instead of blank issue forms
+- **Automatic task breakdown** instead of manual decomposition
+- **Context-aware analysis** instead of generic descriptions
 
-### Setup (One-Time)
-```bash
-# Grant GitHub CLI project permissions
-gh auth refresh -s project --hostname github.com
+### **vs Traditional Project Management**
+- **AI instruction templates** instead of rigid workflows
+- **GitHub-native tracking** instead of external tools
+- **Extended thinking integration** for complex analysis
+- **Copy-and-go setup** instead of complex installations
 
-# Create workflow labels
-.claude/utils/setup-labels.sh
+## 📚 Documentation
 
-# Configure project integration
-.claude/utils/get-project-config.sh
-```
+All documentation is embedded in the framework:
+- **Command templates**: Step-by-step AI instructions in `.claude/commands/`
+- **Project guidance**: Complete setup guide in `.claude/CLAUDE.md` (automatically loaded by Claude Code)
+- **Context standards**: Language-specific guidelines in `.claude/contexts/` (referenced by commands)
+- **Project analysis**: Available via `/project:current`
 
-### Required Project Fields
-- **Status**: Todo, In Progress, Done  
-- **Iteration**: For sprint planning
+## 🎁 Getting Started
 
-### Automation Utilities
-```bash
-.claude/utils/move-item-status.sh 123 done
-.claude/utils/assign-iteration.sh 123 current
-```
+1. **Copy** `.claude/` directory and `CLAUDE.md` to your project
+2. **Set up** GitHub access with your personal access token
+3. **Try** `/project:current` to see your project context
+4. **Create** your first PRD with `/project:plan:prd "your idea"`
+5. **Break it down** with `/project:plan:tasks "#123"`
+6. **Start building** with `/project:do:task "#124"`
 
-## Contributing to Framework
+That's it! No complex installation, just copy-and-go GitHub workflow automation with intelligent AI guidance that adapts to your project and technology stack.
 
-To improve the shared workspace:
+## 📄 License
 
-1. **Make changes** in any project's `.claude/` directory
-2. **Test locally** with your workflow
-3. **Push improvements**:
-   ```bash
-   cd .claude
-   git add .
-   git commit -m "improve: description of changes"
-   git push origin main
-   ```
-4. **Changes sync** to other projects on next `ccsync`
-
-## Troubleshooting
-
-### Installation Issues
-```bash
-# Reload shell after install
-source ~/.zshrc
-
-# Force reinstall
-rm -rf .claude && ./install.sh --force
-
-# Check workspace sync
-cd .claude && git status
-```
-
-### Workspace Sync Issues
-```bash
-# Reset workspace
-rm -rf .claude
-git clone https://github.com/sbusso/dotclaude.git .claude
-
-# Fix sync conflicts
-cd .claude && git stash && git pull && git stash pop
-```
-
-### Missing Commands
-```bash
-# Check memory loading
-/memory
-
-# Verify command files exist
-ls .claude/commands/*/
-
-# Restart Claude Code to reload memory
-```
-
-## Repositories
-
-- **Installer**: https://github.com/sbusso/claude-workflow
-- **Workspace**: https://github.com/sbusso/dotclaude
-- **Issues**: https://github.com/sbusso/claude-workflow/issues
-
-## License
-
-MIT - Use this framework in any project, commercial or personal.
+MIT - Use this system in any project, commercial or personal.
